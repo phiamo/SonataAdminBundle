@@ -16,16 +16,19 @@ namespace Sonata\AdminBundle\Tests\Block;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Admin\Pool;
 use Sonata\AdminBundle\Block\AdminSearchBlockService;
+use Sonata\AdminBundle\Datagrid\DatagridInterface;
 use Sonata\AdminBundle\Datagrid\PagerInterface;
+use Sonata\AdminBundle\Filter\FilterInterface;
 use Sonata\AdminBundle\Search\SearchHandler;
 use Sonata\AdminBundle\Templating\TemplateRegistryInterface;
 use Sonata\BlockBundle\Test\BlockServiceTestCase;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
-class AdminSearchBlockServiceTest extends BlockServiceTestCase
+final class AdminSearchBlockServiceTest extends BlockServiceTestCase
 {
     /**
      * @var Pool
@@ -46,8 +49,8 @@ class AdminSearchBlockServiceTest extends BlockServiceTestCase
     {
         parent::setUp();
 
-        $this->pool = $this->createMock(Pool::class);
-        $this->searchHandler = $this->createMock(SearchHandler::class);
+        $this->pool = new Pool(new Container());
+        $this->searchHandler = new SearchHandler(true);
         $this->templateRegistry = $this->createMock(TemplateRegistryInterface::class);
         $this->templateRegistry->method('getTemplate')->willReturn('@SonataAdmin/Block/block_search_result.html.twig');
     }
@@ -74,20 +77,42 @@ class AdminSearchBlockServiceTest extends BlockServiceTestCase
 
     public function testGlobalSearchReturnsResponse(): void
     {
+        $datagrid = $this->createStub(DatagridInterface::class);
+
         $admin = $this->createMock(AbstractAdmin::class);
-        $pagerInterface = $this->createMock(PagerInterface::class);
+        $admin
+            ->method('getDatagrid')
+            ->willReturn($datagrid);
+
+        $filter = $this->createStub(FilterInterface::class);
+        $filter
+            ->method('getOption')
+            ->with('global_search')
+            ->willReturn(true);
+
+        $datagrid
+            ->method('getFilters')
+            ->willReturn([$filter]);
+
+        $datagrid
+            ->method('getPager')
+            ->willReturn($this->createStub(PagerInterface::class));
+
+        $adminCode = 'code';
+        $container = new Container();
+        $container->set($adminCode, $admin);
+        $pool = new Pool($container, [$adminCode]);
 
         $blockService = new AdminSearchBlockService(
             $this->twig,
-            $this->pool,
+            $pool,
             $this->searchHandler,
             $this->templateRegistry,
             'show'
         );
         $blockContext = $this->getBlockContext($blockService);
+        $blockContext->setSetting('admin_code', $adminCode);
 
-        $this->searchHandler->expects(self::once())->method('search')->willReturn($pagerInterface);
-        $this->pool->expects(self::once())->method('getAdminByAdminCode')->willReturn($admin);
         $admin->expects(self::once())->method('checkAccess')->with('list');
 
         $response = $blockService->execute($blockContext);
@@ -98,19 +123,28 @@ class AdminSearchBlockServiceTest extends BlockServiceTestCase
 
     public function testGlobalSearchReturnsEmptyWhenFiltersAreDisabled(): void
     {
+        $adminCode = 'code';
+
         $admin = $this->createMock(AbstractAdmin::class);
+        $admin
+            ->method('getCode')
+            ->willReturn($adminCode);
+
+        $container = new Container();
+        $container->set($adminCode, $admin);
+        $pool = new Pool($container, [$adminCode]);
 
         $blockService = new AdminSearchBlockService(
             $this->twig,
-            $this->pool,
+            $pool,
             $this->searchHandler,
             $this->templateRegistry,
             'show'
         );
         $blockContext = $this->getBlockContext($blockService);
+        $blockContext->setSetting('admin_code', $adminCode);
 
-        $this->searchHandler->expects(self::once())->method('search')->willReturn(null);
-        $this->pool->expects(self::once())->method('getAdminByAdminCode')->willReturn($admin);
+        $this->searchHandler->configureAdminSearch([$adminCode => false]);
         $admin->expects(self::once())->method('checkAccess')->with('list');
 
         $this->twig->expects(self::never())->method('render');

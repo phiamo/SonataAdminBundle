@@ -145,8 +145,7 @@ class ExplainAdminCommandTest extends TestCase
 
         $container->set('acme.admin.foo', $this->admin);
 
-        $pool = new Pool($container, '', '');
-        $pool->setAdminServiceIds(['acme.admin.foo', 'acme.admin.bar']);
+        $pool = new Pool($container, ['acme.admin.foo', 'acme.admin.bar']);
 
         $this->validatorFactory = $this->createMock(MetadataFactoryInterface::class);
 
@@ -209,7 +208,7 @@ class ExplainAdminCommandTest extends TestCase
         $commandTester->execute(['command' => $command->getName(), 'admin' => 'acme.admin.foo']);
 
         $this->assertSame(sprintf(
-            str_replace("\n", PHP_EOL, file_get_contents(sprintf('%s/../Fixtures/Command/explain_admin.txt', __DIR__))),
+            str_replace("\n", \PHP_EOL, file_get_contents(sprintf('%s/../Fixtures/Command/explain_admin.txt', __DIR__))),
             \get_class($this->admin),
             \get_class($modelManager),
             \get_class($formBuilder),
@@ -261,7 +260,7 @@ class ExplainAdminCommandTest extends TestCase
         $this->assertSame(sprintf(
             str_replace(
                 "\n",
-                PHP_EOL,
+                \PHP_EOL,
                 file_get_contents(sprintf('%s/../Fixtures/Command/explain_admin_empty_validator.txt', __DIR__))
             ),
             \get_class($this->admin),

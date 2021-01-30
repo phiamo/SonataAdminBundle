@@ -21,63 +21,61 @@ use Symfony\Component\Security\Acl\Model\MutableAclInterface;
 /**
  * AdminObjectAclData holds data manipulated by {@link AdminObjectAclManipulator}.
  *
- * @final since sonata-project/admin-bundle 3.52
- *
  * @author Kévin Dunglas <kevin@les-tilleuls.coop>
  */
-class AdminObjectAclData
+final class AdminObjectAclData
 {
     /**
      * @var string[] Permissions managed only by a OWNER
      */
-    protected static $ownerPermissions = ['MASTER', 'OWNER'];
+    private static $ownerPermissions = ['MASTER', 'OWNER'];
 
     /**
      * @var AdminInterface
      */
-    protected $admin;
+    private $admin;
 
     /**
      * @var object
      */
-    protected $object;
+    private $object;
 
     /**
      * @var \Traversable Users to set ACL for
      */
-    protected $aclUsers;
+    private $aclUsers;
 
     /**
      * @var \Traversable Roles to set ACL for
      */
-    protected $aclRoles;
+    private $aclRoles;
 
     /**
      * @var array<string, mixed> Cache of masks
      */
-    protected $masks = [];
+    private $masks = [];
 
     /**
      * @var FormInterface|null
      */
-    protected $aclUsersForm;
+    private $aclUsersForm;
 
     /**
      * @var FormInterface|null
      */
-    protected $aclRolesForm;
+    private $aclRolesForm;
 
     /**
      * @var MutableAclInterface|null
      */
-    protected $acl;
+    private $acl;
 
     /**
      * @var string
      *
      * @phpstan-var class-string
      */
-    protected $maskBuilderClass;
+    private $maskBuilderClass;
 
     /**
      * @phpstan-param class-string $maskBuilderClass
@@ -121,6 +119,9 @@ class AdminObjectAclData
         return $this->aclRoles;
     }
 
+    /**
+     * @return static
+     */
     public function setAcl(MutableAclInterface $acl): self
     {
         $this->acl = $acl;
@@ -141,6 +142,9 @@ class AdminObjectAclData
         return $this->masks;
     }
 
+    /**
+     * @return static
+     */
     public function setAclUsersForm(FormInterface $form): self
     {
         $this->aclUsersForm = $form;
@@ -153,6 +157,9 @@ class AdminObjectAclData
         return $this->aclUsersForm;
     }
 
+    /**
+     * @return static
+     */
     public function setAclRolesForm(FormInterface $form): self
     {
         $this->aclRolesForm = $form;
@@ -211,6 +218,9 @@ class AdminObjectAclData
         return $securityHandler;
     }
 
+    /**
+     * @return array<string, string[]>
+     */
     public function getSecurityInformation(): array
     {
         return $this->getSecurityHandler()->buildSecurityInformation($this->admin);
@@ -219,7 +229,7 @@ class AdminObjectAclData
     /**
      * Cache masks.
      */
-    protected function updateMasks(): void
+    private function updateMasks(): void
     {
         $permissions = $this->getPermissions();
 

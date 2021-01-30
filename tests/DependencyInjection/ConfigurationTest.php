@@ -15,6 +15,7 @@ namespace Sonata\AdminBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
 use Sonata\AdminBundle\DependencyInjection\Configuration;
+use Sonata\AdminBundle\Tests\Fixtures\Controller\FooAdminController;
 use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 use Symfony\Component\Config\Definition\Processor;
@@ -81,6 +82,7 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame([
             'model_manager' => null,
+            'data_source' => null,
             'form_contractor' => null,
             'show_builder' => null,
             'list_builder' => null,
@@ -88,7 +90,6 @@ class ConfigurationTest extends TestCase
             'translator' => null,
             'configuration_pool' => null,
             'route_generator' => null,
-            'validator' => null,
             'security_handler' => null,
             'label' => null,
             'menu_factory' => null,
@@ -254,6 +255,22 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame([], $config['assets']['remove_stylesheets']);
         $this->assertSame([], $config['assets']['remove_javascripts']);
+    }
+
+    public function testDefaultControllerIsCRUDController(): void
+    {
+        $config = $this->process([]);
+
+        $this->assertSame('sonata.admin.controller.crud', $config['default_controller']);
+    }
+
+    public function testSettingDefaultController(): void
+    {
+        $config = $this->process([[
+            'default_controller' => FooAdminController::class,
+        ]]);
+
+        $this->assertSame(FooAdminController::class, $config['default_controller']);
     }
 
     /**

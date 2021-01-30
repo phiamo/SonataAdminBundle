@@ -15,7 +15,7 @@ file that was distributed with this source code.
 {% endblock %}
 
 {% block num_results %}
-    {% trans with {'%count%': admin.datagrid.pager.nbresults} from 'SonataAdminBundle' %}list_results_count{% endtrans %}
+    {% trans with {'%count%': admin.datagrid.pager.countResults()} from 'SonataAdminBundle' %}list_results_count{% endtrans %}
     &nbsp;-&nbsp;
 {% endblock %}
 

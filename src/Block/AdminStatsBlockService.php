@@ -58,7 +58,6 @@ final class AdminStatsBlockService extends AbstractBlockService
         return $this->renderPrivateResponse($blockContext->getTemplate(), [
             'block' => $blockContext->getBlock(),
             'settings' => $blockContext->getSettings(),
-            'admin_pool' => $this->pool,
             'admin' => $admin,
             'pager' => $datagrid->getPager(),
             'datagrid' => $datagrid,

@@ -320,7 +320,9 @@ file that was distributed with this source code.
 
 {% block form_row %}
     {% set show_label = show_label ?? true %}
-    <div class="form-group{% if errors|length > 0 %} has-error{% endif %}" id="sonata-ba-field-container-{{ id }}">
+    {% set row_id = 'sonata-ba-field-container-'~id %}
+    {% set row_class = (row_attr.class|default('') ~ ' form-group' ~ (errors|length > 0 ? ' has-error'))|trim %}
+    <div{% with {attr: row_attr|merge({id: row_id, class: row_class})} %}{{ block('attributes') }}{% endwith %}>
         {% if sonata_admin.field_description.options is defined %}
             {% set label = sonata_admin.field_description.options.name|default(label) %}
         {% endif %}
@@ -529,7 +531,11 @@ file that was distributed with this source code.
 
     <script>
         jQuery(document).ready(function() {
-            Admin.setup_sortable_select2(jQuery('#{{ id }}'), {{ form.vars.choices|json_encode|raw }});
+            var options = {};
+
+            {% block sonata_type_model_autocomplete_select2_options_js %}{% endblock %}
+
+            Admin.setup_sortable_select2(jQuery('#{{ id }}'), {{ form.vars.choices|json_encode|raw }}, options);
         });
     </script>
 {% endblock %}

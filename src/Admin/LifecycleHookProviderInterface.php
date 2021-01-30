@@ -27,6 +27,7 @@ interface LifecycleHookProviderInterface
      * This method should call preUpdate, do the update, and call postUpdate.
      *
      * @phpstan-param T $object
+     * @phpstan-return T $object
      */
     public function update(object $object): object;
 
@@ -34,6 +35,7 @@ interface LifecycleHookProviderInterface
      * This method should call prePersist, do the creation, and call postPersist.
      *
      * @phpstan-param T $object
+     * @phpstan-return T $object
      */
     public function create(object $object): object;
 
@@ -43,8 +45,6 @@ interface LifecycleHookProviderInterface
      * @phpstan-param T $object
      */
     public function delete(object $object): void;
-
-    public function preValidate(object $object): void;
 
     /**
      * @phpstan-param T $object

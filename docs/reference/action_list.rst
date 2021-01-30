@@ -51,7 +51,7 @@ Here is an example::
 
             // you may specify the field type directly as the
             // second argument instead of in the options
-            ->add('isVariation', TemplateRegistry::TYPE_BOOLEAN)
+            ->add('isVariation', FieldDescriptionInterface::TYPE_BOOLEAN)
 
             // if null, the type will be guessed
             ->add('enabled', null, [
@@ -59,7 +59,7 @@ Here is an example::
             ])
 
             // editable association field
-            ->add('status', TemplateRegistry::TYPE_CHOICE, [
+            ->add('status', FieldDescriptionInterface::TYPE_CHOICE, [
                 'editable' => true,
                 'class' => 'Vendor\ExampleBundle\Entity\ExampleStatus',
                 'choices' => [
@@ -70,7 +70,7 @@ Here is an example::
             ])
 
             // editable multiple field
-            ->add('winner', TemplateRegistry::TYPE_CHOICE, [
+            ->add('winner', FieldDescriptionInterface::TYPE_CHOICE, [
                 'editable' => true,
                 'multiple' => true,
                 'choices' => [
@@ -81,7 +81,7 @@ Here is an example::
             ])
 
             // we can add options to the field depending on the type
-            ->add('price', TemplateRegistry::TYPE_CURRENCY, [
+            ->add('price', FieldDescriptionInterface::TYPE_CURRENCY, [
                 'currency' => $this->currencyDetector->getCurrency()->getLabel()
             ])
 
@@ -143,21 +143,21 @@ Options
 Available types and associated options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-+--------------------------------------+---------------------+-----------------------------------------------------------------------+
-| Type                                 | Options             | Description                                                           |
-+======================================+=====================+=======================================================================+
-| ``ListMapper::TYPE_ACTIONS``         | actions             | List of available actions                                             |
-+                                      +                     +                                                                       +
-|                                      |   edit              | Name of the action (``show``, ``edit``, ``history``, ``delete``, etc) |
-+                                      +                     +                                                                       +
-|                                      |     link_parameters | Route parameters                                                      |
-+--------------------------------------+---------------------+-----------------------------------------------------------------------+
-| ``ListMapper::TYPE_BATCH``           |                     | Renders a checkbox                                                    |
-+--------------------------------------+---------------------+-----------------------------------------------------------------------+
-| ``ListMapper::TYPE_SELECT``          |                     | Renders a select box                                                  |
-+--------------------------------------+---------------------+-----------------------------------------------------------------------+
-| ``TemplateRegistry::TYPE_*``         |                     | See :doc:`Field Types <field_types>`                                  |
-+--------------------------------------+---------------------+-----------------------------------------------------------------------+
++---------------------------------------+---------------------+-----------------------------------------------------------------------+
+| Type                                  | Options             | Description                                                           |
++=======================================+=====================+=======================================================================+
+| ``ListMapper::TYPE_ACTIONS``          | actions             | List of available actions                                             |
++                                       +                     +                                                                       +
+|                                       |   edit              | Name of the action (``show``, ``edit``, ``history``, ``delete``, etc) |
++                                       +                     +                                                                       +
+|                                       |     link_parameters | Route parameters                                                      |
++---------------------------------------+---------------------+-----------------------------------------------------------------------+
+| ``ListMapper::TYPE_BATCH``            |                     | Renders a checkbox                                                    |
++---------------------------------------+---------------------+-----------------------------------------------------------------------+
+| ``ListMapper::TYPE_SELECT``           |                     | Renders a select box                                                  |
++---------------------------------------+---------------------+-----------------------------------------------------------------------+
+| ``FieldDescriptionInterface::TYPE_*`` |                     | See :doc:`Field Types <field_types>`                                  |
++---------------------------------------+---------------------+-----------------------------------------------------------------------+
 
 Symfony Data Transformers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -357,10 +357,10 @@ Configuring the default ordering column can be achieved by overriding the
             protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
             {
                 $rootAlias = current($query->getRootAliases());
-            
+
                 $query->addOrderBy($rootAlias.'.author', 'ASC');
                 $query->addOrderBy($rootAlias.'.createdAt', 'ASC');
-                
+
                 return $query;
             }
 
@@ -541,17 +541,17 @@ If you have the **SonataDoctrineORMAdminBundle** installed you can use the
                 ]);
         }
 
-        public function getFullTextFilter($queryBuilder, $alias, $field, $value)
+        public function getFullTextFilter($query, $alias, $field, $value)
         {
             if (!$value['value']) {
                 return false;
             }
 
             // Use `andWhere` instead of `where` to prevent overriding existing `where` conditions
-            $queryBuilder->andWhere($queryBuilder->expr()->orX(
-                $queryBuilder->expr()->like($alias.'.username', $queryBuilder->expr()->literal('%' . $value['value'] . '%')),
-                $queryBuilder->expr()->like($alias.'.firstName', $queryBuilder->expr()->literal('%' . $value['value'] . '%')),
-                $queryBuilder->expr()->like($alias.'.lastName', $queryBuilder->expr()->literal('%' . $value['value'] . '%'))
+            $query->andWhere($query->expr()->orX(
+                $query->expr()->like($alias.'.username', $query->expr()->literal('%' . $value['value'] . '%')),
+                $query->expr()->like($alias.'.firstName', $query->expr()->literal('%' . $value['value'] . '%')),
+                $query->expr()->like($alias.'.lastName', $query->expr()->literal('%' . $value['value'] . '%'))
             ));
 
             return true;
@@ -567,7 +567,7 @@ type of your condition(s)::
 
     final class UserAdmin extends Sonata\UserBundle\Admin\Model\UserAdmin
     {
-        public function getFullTextFilter($queryBuilder, $alias, $field, $value)
+        public function getFullTextFilter($query, $alias, $field, $value)
         {
             if (!$value['value']) {
                 return;
@@ -575,7 +575,7 @@ type of your condition(s)::
 
             $operator = $value['type'] == EqualType::TYPE_IS_EQUAL ? '=' : '!=';
 
-            $queryBuilder
+            $query
                 ->andWhere($alias.'.username '.$operator.' :username')
                 ->setParameter('username', $value['value'])
             ;
@@ -614,10 +614,10 @@ Example::
                 'header_style' => 'width: 5%; text-align: center',
                 'row_align' => 'center'
             ])
-            ->add('name', TemplateRegistry::TYPE_STRING, [
+            ->add('name', FieldDescriptionInterface::TYPE_STRING, [
                 'header_style' => 'width: 35%'
             ])
-            ->add('description', TemplateRegistry::TYPE_STRING, [
+            ->add('description', FieldDescriptionInterface::TYPE_STRING, [
                 'header_style' => 'width: 35%',
                 'collapse' => true
             ])

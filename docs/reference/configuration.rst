@@ -70,6 +70,7 @@ Full Configuration Options
             title: 'Sonata Admin'
             title_logo: bundles/sonataadmin/logo_title.png
             search: true
+            default_controller: 'sonata.admin.controller.crud'
             options:
                 html5_validate: true
 
@@ -119,6 +120,7 @@ Full Configuration Options
                     class: col-md-4
             admin_services:
                 model_manager: null
+                data_source: null
                 form_contractor: null
                 show_builder: null
                 list_builder: null
@@ -233,6 +235,7 @@ Full Configuration Options
 
                 # Prototype
                 id:
+                    global: false
                     admins: []
                     excludes: []
                     implements: []

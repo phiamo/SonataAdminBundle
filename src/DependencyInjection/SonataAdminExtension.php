@@ -86,10 +86,10 @@ final class SonataAdminExtension extends Extension
         $config['options']['role_super_admin'] = $config['security']['role_super_admin'];
         $config['options']['search'] = $config['search'];
 
-        $pool = $container->getDefinition('sonata.admin.pool');
-        $pool->replaceArgument(1, $config['title']);
-        $pool->replaceArgument(2, $config['title_logo']);
-        $pool->replaceArgument(3, $config['options']);
+        $sonataConfiguration = $container->getDefinition('sonata.admin.configuration');
+        $sonataConfiguration->replaceArgument(0, $config['title']);
+        $sonataConfiguration->replaceArgument(1, $config['title_logo']);
+        $sonataConfiguration->replaceArgument(2, $config['options']);
 
         if (false === $config['options']['lock_protection']) {
             $container->removeDefinition('sonata.admin.lock.extension');
@@ -99,6 +99,7 @@ final class SonataAdminExtension extends Extension
         $container->setParameter('sonata.admin.configuration.global_search.case_sensitive', $config['global_search']['case_sensitive']);
         $container->setParameter('sonata.admin.configuration.templates', $config['templates']);
         $container->setParameter('sonata.admin.configuration.admin_services', $config['admin_services']);
+        $container->setParameter('sonata.admin.configuration.default_controller', $config['default_controller']);
         $container->setParameter('sonata.admin.configuration.dashboard_groups', $config['dashboard']['groups']);
         $container->setParameter('sonata.admin.configuration.dashboard_blocks', $config['dashboard']['blocks']);
         $container->setParameter('sonata.admin.configuration.sort_admins', $config['options']['sort_admins']);
@@ -222,7 +223,7 @@ final class SonataAdminExtension extends Extension
     private function mergeArray(array $array, array $addArray, array $removeArray = []): array
     {
         foreach ($addArray as $toAdd) {
-            array_push($array, $toAdd);
+            $array[] = $toAdd;
         }
         foreach ($removeArray as $toRemove) {
             if (\in_array($toRemove, $array, true)) {

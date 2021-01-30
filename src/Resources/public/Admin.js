@@ -313,7 +313,29 @@ var Admin = {
         });
 
         jQuery('.sonata-filter-form', subject).on('submit', function () {
-            jQuery(this).find('[sonata-filter="true"]:hidden :input').val('');
+            var $form = jQuery(this);
+            $form.find('[sonata-filter="true"]:hidden :input').val('');
+
+            if (!this.dataset.defaultValues) {
+                return;
+            }
+
+            var defaultValues = $.param({'filter': JSON.parse(this.dataset.defaultValues)}).split('&'),
+                submittedValues = $form.serialize().split('&');
+
+            // Compare default and submitted filter values in `keyValue` representation. (`keyValue` ex: "filter[publish][value][end]=2020-12-12")
+            // Only allow to submit non default and non empty values, because empty values means they are not present.
+            var changedValues = submittedValues.filter(function (keyValue) {
+                return defaultValues.indexOf(keyValue) === -1 && keyValue.split('=')[1] !== '';
+            });
+
+            // Disable all inputs and enable only the required ones
+            $form.find('[name*=filter]').attr('disabled', 'disabled');
+            changedValues
+                .map(function (keyValue) { return decodeURIComponent(keyValue.split('=')[0]); })
+                .forEach(function (key) {
+                    $form.find('[name="' + key + '"]').removeAttr('disabled');
+                });
         });
 
         /* Advanced filters */
@@ -540,13 +562,13 @@ var Admin = {
         return '100%';
     },
 
-    setup_sortable_select2: function(subject, data) {
+    setup_sortable_select2: function(subject, data, customOptions) {
         var transformedData = [];
         for (var i = 0 ; i < data.length ; i++) {
             transformedData[i] = {id: data[i].data, text: data[i].label};
         }
 
-        subject.select2({
+        var options = Object.assign({
             width: function(){
                 // Select2 v3 and v4 BC. If window.Select2 is defined, then the v3 is installed.
                 // NEXT_MAJOR: Remove Select2 v3 support.
@@ -555,7 +577,9 @@ var Admin = {
             dropdownAutoWidth: true,
             data: transformedData,
             multiple: true
-        });
+        }, customOptions);
+
+        subject.select2(options);
 
         subject.select2("container").find("ul.select2-choices").sortable({
             containment: 'parent',
@@ -800,7 +824,7 @@ jQuery(document).on('sonata-admin-append-form-element', function(e) {
     Admin.setup_collection_counter(e.target);
 });
 
-jQuery(window).load(function() {
+jQuery(window).on('load', function() {
     if (Admin.get_config('CONFIRM_EXIT')) {
         jQuery('.sonata-ba-form form').each(function() {
             jQuery(this).confirmExit();

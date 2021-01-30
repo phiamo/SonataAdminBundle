@@ -23,21 +23,19 @@ use Symfony\Component\Form\FormBuilderInterface;
 /**
  * This class is use to simulate the Form API.
  *
- * @final since sonata-project/admin-bundle 3.52
- *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class FormMapper extends BaseGroupedMapper
+final class FormMapper extends BaseGroupedMapper
 {
-    /**
-     * @var FormBuilderInterface
-     */
-    protected $formBuilder;
-
     /**
      * @var FormContractorInterface
      */
     protected $builder;
+
+    /**
+     * @var FormBuilderInterface
+     */
+    private $formBuilder;
 
     public function __construct(
         FormContractorInterface $formContractor,
@@ -92,9 +90,7 @@ class FormMapper extends BaseGroupedMapper
             $type = CollectionType::class;
         }
 
-        $label = $fieldName;
-
-        $group = $this->addFieldToCurrentGroup($label);
+        $group = $this->addFieldToCurrentGroup($fieldName);
 
         // Try to autodetect type
         if ($name instanceof FormBuilderInterface && null === $type) {
@@ -123,10 +119,11 @@ class FormMapper extends BaseGroupedMapper
         }
 
         if ($name instanceof FormBuilderInterface) {
+            $child = $name;
             $type = null;
             $options = [];
         } else {
-            $name = $fieldDescription->getName();
+            $child = $fieldDescription->getName();
 
             // Note that the builder var is actually the formContractor:
             $options = array_replace_recursive(
@@ -141,12 +138,22 @@ class FormMapper extends BaseGroupedMapper
             }
 
             if (!isset($options['label'])) {
-                $options['label'] = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', 'label');
+                /*
+                 * NEXT_MAJOR: Replace $child by $name in the next line.
+                 * And add the following BC-break in the upgrade note:
+                 *
+                 * The form label are now correctly using the label translator strategy
+                 * for field with `.` (which won't be replaced by `__`). For instance,
+                 * with the underscore label strategy, the label `foo.barBaz` was
+                 * previously `form.label_foo__bar_baz` and now is `form.label_foo_bar_baz`
+                 * to be consistent with others labels like `show.label_foo_bar_baz`.
+                 */
+                $options['label'] = $this->admin->getLabelTranslatorStrategy()->getLabel($child, 'form', 'label');
             }
         }
 
         $this->admin->addFormFieldDescription($fieldName, $fieldDescription);
-        $this->formBuilder->add($name, $type, $options);
+        $this->formBuilder->add($child, $type, $options);
 
         return $this;
     }
@@ -168,7 +175,7 @@ class FormMapper extends BaseGroupedMapper
     /**
      * @return string[]
      */
-    final public function keys(): array
+    public function keys(): array
     {
         return array_keys($this->formBuilder->all());
     }
@@ -179,45 +186,6 @@ class FormMapper extends BaseGroupedMapper
         $this->admin->removeFormFieldDescription($key);
         $this->admin->removeFieldFromFormGroup($key);
         $this->formBuilder->remove($key);
-
-        return $this;
-    }
-
-    /**
-     * @param string $group          The group to delete
-     * @param string $tab            The tab the group belongs to, defaults to 'default'
-     * @param bool   $deleteEmptyTab Whether or not the Tab should be deleted, when the deleted group leaves the tab empty after deletion
-     *
-     * @return static
-     */
-    public function removeGroup(string $group, string $tab = 'default', bool $deleteEmptyTab = false): self
-    {
-        $groups = $this->getGroups();
-
-        // When the default tab is used, the tabname is not prepended to the index in the group array
-        if ('default' !== $tab) {
-            $group = sprintf('%s.%s', $tab, $group);
-        }
-
-        if (isset($groups[$group])) {
-            foreach ($groups[$group]['fields'] as $field) {
-                $this->remove($field);
-            }
-        }
-        unset($groups[$group]);
-
-        $tabs = $this->getTabs();
-        $key = array_search($group, $tabs[$tab]['groups'], true);
-
-        if (false !== $key) {
-            unset($tabs[$tab]['groups'][$key]);
-        }
-        if ($deleteEmptyTab && 0 === \count($tabs[$tab]['groups'])) {
-            unset($tabs[$tab]);
-        }
-
-        $this->setTabs($tabs);
-        $this->setGroups($groups);
 
         return $this;
     }
@@ -233,17 +201,6 @@ class FormMapper extends BaseGroupedMapper
     public function create(string $name, ?string $type = null, array $options = []): FormBuilderInterface
     {
         return $this->formBuilder->create($name, $type, $options);
-    }
-
-    /**
-     * Symfony default form class sadly can't handle
-     * form element with dots in its name (when data
-     * get bound, the default dataMapper is a PropertyPathMapper).
-     * So use this trick to avoid any issue.
-     */
-    protected function sanitizeFieldName(string $fieldName): string
-    {
-        return str_replace(['__', '.'], ['____', '__'], $fieldName);
     }
 
     protected function getGroups(): array
@@ -269,5 +226,16 @@ class FormMapper extends BaseGroupedMapper
     protected function getName(): string
     {
         return 'form';
+    }
+
+    /**
+     * Symfony default form class sadly can't handle
+     * form element with dots in its name (when data
+     * get bound, the default dataMapper is a PropertyPathMapper).
+     * So use this trick to avoid any issue.
+     */
+    private function sanitizeFieldName(string $fieldName): string
+    {
+        return str_replace(['__', '.'], ['____', '__'], $fieldName);
     }
 }

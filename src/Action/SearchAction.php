@@ -79,7 +79,6 @@ final class SearchAction
                     $this->templateRegistry->getTemplate('ajax') :
                     $this->templateRegistry->getTemplate('layout'),
                 'breadcrumbs_builder' => $this->breadcrumbsBuilder,
-                'admin_pool' => $this->pool,
                 'query' => $request->get('q'),
                 'groups' => $this->pool->getDashboardGroups(),
             ]));
@@ -105,7 +104,9 @@ final class SearchAction
             $request->get('page'),
             $request->get('offset')
         )) {
-            foreach ($pager->getResults() as $result) {
+            $pageResults = $pager->getCurrentPageResults();
+
+            foreach ($pageResults as $result) {
                 $results[] = [
                     'label' => $admin->toString($result),
                     'link' => $admin->getSearchResultLink($result),
@@ -113,7 +114,7 @@ final class SearchAction
                 ];
             }
             $page = (int) $pager->getPage();
-            $total = (int) $pager->getNbResults();
+            $total = $pager->countResults();
         }
 
         $response = new JsonResponse([

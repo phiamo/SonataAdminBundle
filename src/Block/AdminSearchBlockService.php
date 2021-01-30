@@ -97,7 +97,6 @@ final class AdminSearchBlockService extends AbstractBlockService
         return $this->renderPrivateResponse($this->templateRegistry->getTemplate('search_result_block'), [
             'block' => $blockContext->getBlock(),
             'settings' => $blockContext->getSettings(),
-            'admin_pool' => $this->pool,
             'pager' => $pager,
             'admin' => $admin,
             'show_empty_boxes' => $this->emptyBoxesOption,

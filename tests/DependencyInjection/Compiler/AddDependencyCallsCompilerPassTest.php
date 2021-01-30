@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Sonata\AdminBundle\DependencyInjection\Compiler\AddDependencyCallsCompilerPass;
 use Sonata\AdminBundle\DependencyInjection\SonataAdminExtension;
 use Sonata\AdminBundle\Route\RoutesCache;
+use Sonata\AdminBundle\Tests\Fixtures\Controller\FooAdminController;
 use Sonata\BlockBundle\DependencyInjection\SonataBlockExtension;
 use Sonata\DoctrinePHPCRAdminBundle\Route\PathInfoBuilderSlashes;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
@@ -168,6 +169,12 @@ class AddDependencyCallsCompilerPassTest extends TestCase
         $this->assertContains('sonata_article_admin', $adminServiceIds);
         $this->assertContains('sonata_news_admin', $adminServiceIds);
 
+        $poolDefinition = $container->getDefinition('sonata.admin.pool');
+
+        $this->assertContains('sonata_post_admin', $poolDefinition->getArgument(1));
+        $this->assertArrayHasKey('sonata_group_one', $poolDefinition->getArgument(2));
+        $this->assertArrayHasKey(News::class, $poolDefinition->getArgument(3));
+
         $this->assertArrayHasKey('sonata_group_one', $adminGroups);
         $this->assertArrayHasKey('label', $adminGroups['sonata_group_one']);
         $this->assertArrayHasKey('label_catalogue', $adminGroups['sonata_group_one']);
@@ -303,7 +310,7 @@ class AddDependencyCallsCompilerPassTest extends TestCase
                     break;
 
                 case 'setLabel':
-                    $this->assertSame('-', $parameters[0]);
+                    $this->assertNull($parameters[0]);
 
                     break;
 
@@ -563,6 +570,24 @@ class AddDependencyCallsCompilerPassTest extends TestCase
         $this->assertSame('extra_argument_2', $definition->getArgument(3));
     }
 
+    public function testDefaultControllerCanBeChanged(): void
+    {
+        $container = $this->getContainer();
+
+        $config = $this->config;
+        $config['default_controller'] = FooAdminController::class;
+
+        $this->extension->load([$config], $container);
+
+        $compilerPass = new AddDependencyCallsCompilerPass();
+
+        $compilerPass->process($container);
+        $container->compile();
+
+        $definition = $container->getDefinition('sonata_without_controller');
+        $this->assertSame(FooAdminController::class, $definition->getArgument(2));
+    }
+
     /**
      * @return array
      */
@@ -674,6 +699,12 @@ class AddDependencyCallsCompilerPassTest extends TestCase
                     $bundleSubstring
                 ));
             $container
+                ->register(sprintf('sonata.admin.data_source.%s', $key))
+                ->setClass(sprintf(
+                    'Sonata\Doctrine%sAdminBundle\Exporter\DataSource',
+                    $bundleSubstring
+                ));
+            $container
                 ->register(sprintf('sonata.admin.builder.%s_form', $key))
                 ->setClass(sprintf(
                     'Sonata\Doctrine%sAdminBundle\Builder\FormContractor',
@@ -752,6 +783,11 @@ class AddDependencyCallsCompilerPassTest extends TestCase
             ->setClass(MockAdmin::class)
             ->setArguments(['', ReportTwo::class, 'sonata.admin.controller.crud'])
             ->addTag('sonata.admin', ['group' => 'sonata_report_two_group', 'manager_type' => 'orm', 'show_mosaic_button' => true]);
+        $container
+            ->register('sonata_without_controller')
+            ->setClass(MockAdmin::class)
+            ->setArguments(['', ReportTwo::class, ''])
+            ->addTag('sonata.admin', ['group' => 'sonata_report_two_group', 'manager_type' => 'orm']);
 
         // translator
         $container

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Sonata\AdminBundle\Tests\Datagrid;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Datagrid\SimplePager;
@@ -26,6 +27,16 @@ use Sonata\AdminBundle\Datagrid\SimplePager;
  */
 class SimplePagerTest extends TestCase
 {
+    /**
+     * @var SimplePager
+     */
+    private $pager;
+
+    /**
+     * @var MockObject&ProxyQueryInterface
+     */
+    private $proxyQuery;
+
     protected function setUp(): void
     {
         $this->pager = new SimplePager(10, 2);
@@ -115,7 +126,7 @@ class SimplePagerTest extends TestCase
         $this->pager->setQuery($this->proxyQuery);
         $this->pager->init();
         $this->assertSame(1, $this->pager->getLastPage());
-        $this->assertSame(0, $this->pager->getNbResults());
+        $this->assertSame(0, $this->pager->countResults());
     }
 
     public function testInitNoQuery(): void
@@ -124,10 +135,9 @@ class SimplePagerTest extends TestCase
         $this->pager->init();
     }
 
-    public function testGetResultsAlwaysReturnsAnArray(): void
+    public function testGetCurrentPageResultsAlwaysReturnsAnArray(): void
     {
         // phpcr odm returns ArrayCollection
-
         $this->proxyQuery->expects($this->once())
             ->method('execute')
             ->with([], null)
@@ -136,6 +146,6 @@ class SimplePagerTest extends TestCase
         $this->pager->setQuery($this->proxyQuery);
         $this->pager->setMaxPerPage(2);
 
-        $this->assertSame(range(0, 1), $this->pager->getResults());
+        $this->assertSame(range(0, 1), $this->pager->getCurrentPageResults());
     }
 }

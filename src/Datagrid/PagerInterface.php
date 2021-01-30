@@ -15,6 +15,8 @@ namespace Sonata\AdminBundle\Datagrid;
 
 /**
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
+ *
+ * @phpstan-template T of ProxyQueryInterface
  */
 interface PagerInterface
 {
@@ -43,17 +45,50 @@ interface PagerInterface
      */
     public function setPage(int $page): void;
 
+    public function getNextPage(): int;
+
+    public function getPreviousPage(): int;
+
+    public function getFirstPage(): int;
+
+    public function isFirstPage(): bool;
+
+    public function getLastPage(): int;
+
+    public function isLastPage(): bool;
+
     /**
-     * Set query.
+     * @phpstan-return T|null
+     */
+    public function getQuery(): ?ProxyQueryInterface;
+
+    /**
+     * @phpstan-param T $query
      */
     public function setQuery(ProxyQueryInterface $query): void;
 
     /**
-     * Returns an array of results on the given page.
-     *
-     * @return object[]
+     * Returns true if the current query requires pagination.
      */
-    public function getResults(): array;
+    public function haveToPaginate(): bool;
+
+    /**
+     * Returns a collection of results on the given page.
+     *
+     * @return iterable<object>
+     */
+    public function getCurrentPageResults(): iterable;
+
+    public function countResults(): int;
+
+    /**
+     * Returns an array of page numbers to use in pagination links.
+     *
+     * @param int|null $nbLinks The maximum number of page numbers to return
+     *
+     * @return int[]
+     */
+    public function getLinks(?int $nbLinks = null): array;
 
     /**
      * Sets the maximum number of page numbers.
@@ -64,11 +99,4 @@ interface PagerInterface
      * Returns the maximum number of page numbers.
      */
     public function getMaxPageLinks(): int;
-
-    /**
-     * Returns true if on the last page.
-     */
-    public function isLastPage(): bool;
-
-    public function getNbResults(): int;
 }

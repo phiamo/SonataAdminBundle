@@ -61,7 +61,7 @@ The available options are:
   string to designate which field to use for the choice values.
 
 ``query``
-  defaults to ``null``. You can set this to a QueryBuilder instance in order to
+  defaults to ``null``. You can set this to a ProxyQueryInterface instance in order to
   define a custom query for retrieving the available options.
 
 ``template``
@@ -272,9 +272,9 @@ The available options are:
               'property' => 'title',
               'callback' => static function (AdminInterface $admin, string $property, $value): void {
                   $datagrid = $admin->getDatagrid();
-                  $queryBuilder = $datagrid->getQuery();
-                  $queryBuilder
-                      ->andWhere($queryBuilder->getRootAlias() . '.foo=:barValue')
+                  $query = $datagrid->getQuery();
+                  $query
+                      ->andWhere($query->getRootAlias() . '.foo=:barValue')
                       ->setParameter('barValue', $admin->getRequest()->get('bar'))
                   ;
                   $datagrid->setValue($property, null, $value);
@@ -311,6 +311,18 @@ The available options are:
             'property' => 'title',
             'to_string_callback' => function($entity, $property) {
                 return $entity->getTitle();
+            },
+        ])
+    ;
+
+``response_item_callback``
+  defaults to ``null``. Callable function that can be used to customize each item individually returned in JSON::
+
+    $formMapper
+        ->add('category', ModelAutocompleteType::class, [
+            'property' => 'title',
+            'response_item_callback' => function ($admin, $entity, &$item) {
+                $item['type'] = $entity->getType();
             },
         ])
     ;
@@ -407,6 +419,12 @@ The available options are:
 
     {# change the default selection format #}
     {% block sonata_type_model_autocomplete_selection_format %}'<b>'+item.label+'</b>'{% endblock %}
+
+    {# customize select2 options #}
+    {% block sonata_type_model_autocomplete_select2_options_js %}
+    options.multiple = false;
+    options.dropdownAutoWidth = false;
+    {% endblock %}
 
 ``target_admin_access_action``
   defaults to ``list``.

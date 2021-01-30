@@ -18,9 +18,17 @@ use Doctrine\Common\Collections\Collection;
 /**
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  * @author Sjoerd Peters <sjoerd.peters@gmail.com>
+ *
+ * @phpstan-template T of ProxyQueryInterface
+ * @phpstan-extends Pager<T>
  */
 final class SimplePager extends Pager
 {
+    /**
+     * @var iterable<object>|null
+     */
+    protected $results;
+
     /**
      * @var bool
      */
@@ -34,7 +42,7 @@ final class SimplePager extends Pager
     private $threshold;
 
     /**
-     * thresholdCount is null prior to its initialization in `getResults()`.
+     * thresholdCount is null prior to its initialization in `getCurrentPageResults()`.
      *
      * @var int|null
      */
@@ -55,7 +63,7 @@ final class SimplePager extends Pager
         $this->setThreshold($threshold);
     }
 
-    public function getNbResults(): int
+    public function countResults(): int
     {
         $n = ($this->getLastPage() - 1) * $this->getMaxPerPage();
         if ($this->getLastPage() === $this->getPage()) {
@@ -65,13 +73,14 @@ final class SimplePager extends Pager
         return $n;
     }
 
-    public function getResults(?int $hydrationMode = null): array
+    public function getCurrentPageResults(): iterable
     {
-        if ($this->results) {
+        if (null !== $this->results) {
             return $this->results;
         }
 
-        $results = $this->getQuery()->execute([], $hydrationMode);
+        /** @var array<object>|Collection<array-key, object> $results */
+        $results = $this->getQuery()->execute();
 
         // doctrine/phpcr-odm returns ArrayCollection
         if ($results instanceof Collection) {
@@ -97,14 +106,15 @@ final class SimplePager extends Pager
     }
 
     /**
-     * @throws \RuntimeException the QueryBuilder is uninitialized
+     * @throws \RuntimeException the query is uninitialized
      */
     public function init(): void
     {
         if (!$this->getQuery()) {
-            throw new \RuntimeException('Uninitialized QueryBuilder');
+            throw new \RuntimeException('Uninitialized query');
         }
-        $this->resetIterator();
+
+        $this->haveToPaginate = false;
 
         if (0 === $this->getPage() || 0 === $this->getMaxPerPage()) {
             $this->setLastPage(0);
@@ -118,7 +128,8 @@ final class SimplePager extends Pager
                 ? $this->getMaxPerPage() * $this->threshold + 1 : $this->getMaxPerPage() + 1;
 
             $this->getQuery()->setMaxResults($maxOffset);
-            $this->initializeIterator();
+
+            $this->results = $this->getCurrentPageResults();
 
             $t = (int) ceil($this->thresholdCount / $this->getMaxPerPage()) + $this->getPage() - 1;
             $this->setLastPage(max(1, $t));
@@ -136,11 +147,5 @@ final class SimplePager extends Pager
     public function getThreshold(): int
     {
         return $this->threshold;
-    }
-
-    protected function resetIterator(): void
-    {
-        parent::resetIterator();
-        $this->haveToPaginate = false;
     }
 }

@@ -2,6 +2,211 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.88.0](https://github.com/sonata-project/SonataAdminBundle/compare/3.87.0...3.88.0) - 2021-01-18
+### Added
+- [[#6767](https://github.com/sonata-project/SonataAdminBundle/pull/6767)] Allow PHP 8 ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6766](https://github.com/sonata-project/SonataAdminBundle/pull/6766)] Added `Sonata\AdminBundle\Templating\MutableTemplateRegistryAwareInterface::setTemplate()` ([@wbloszyk](https://github.com/wbloszyk))
+- [[#6766](https://github.com/sonata-project/SonataAdminBundle/pull/6766)] Added `Sonata\AdminBundle\Templating\MutableTemplateRegistryAwareInterface::setTemplates()` ([@wbloszyk](https://github.com/wbloszyk))
+- [[#6769](https://github.com/sonata-project/SonataAdminBundle/pull/6769)] Translation file for `bs` (Bosnian) ([@tambait](https://github.com/tambait))
+- [[#6769](https://github.com/sonata-project/SonataAdminBundle/pull/6769)] Translation files for `sr_Latn` & `sr_Cyrl` (Serbian Latin & Cyrillic script) ([@tambait](https://github.com/tambait))
+
+### Fixed
+- [[#6772](https://github.com/sonata-project/SonataAdminBundle/pull/6772)] Fixed using admin maker command having a default controller service ([@franmomu](https://github.com/franmomu))
+
+### Removed
+- [[#6766](https://github.com/sonata-project/SonataAdminBundle/pull/6766)] Removed deprecations for `Sonata\AdminBundle\Admin\AbstractAdmin::setTemplate()` ([@wbloszyk](https://github.com/wbloszyk))
+- [[#6766](https://github.com/sonata-project/SonataAdminBundle/pull/6766)] Removed deprecations for `Sonata\AdminBundle\Admin\AbstractAdmin::setTemplates()` ([@wbloszyk](https://github.com/wbloszyk))
+
+## [3.87.0](https://github.com/sonata-project/SonataAdminBundle/compare/3.86.0...3.87.0) - 2021-01-12
+### Added
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Added `Sonata\AdminBundle\Twig\Extension\SecurityExtension` ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Added `Sonata\AdminBundle\Twig\Extension\CanonicalizeExtension` ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Added `Sonata\AdminBundle\Twig\Extension\XEditableExtension` ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Added `Sonata\AdminBundle\Twig\Extension\RenderElementExtension` ([@tambait](https://github.com/tambait))
+- [[#6760](https://github.com/sonata-project/SonataAdminBundle/pull/6760)] Added `PagerInterface::getCurrentPageResults()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6759](https://github.com/sonata-project/SonataAdminBundle/pull/6759)] Add generics to `PagerInterface`. ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6729](https://github.com/sonata-project/SonataAdminBundle/pull/6729)] Added `default_controller` to configure the default controlled used by the admins. ([@franmomu](https://github.com/franmomu))
+
+### Deprecated
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::MOMENT_UNSUPPORTED_LOCALES` constant ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::setXEditableTypeMapping()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::getXEditableType()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::getXEditableChoices()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::getCanonicalizedLocaleForMoment()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::getCanonicalizedLocaleForSelect2()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::isGrantedAffirmative()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::renderListElement()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::renderViewElement()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::renderViewElementCompare()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::renderRelationElement()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::getTemplate()` method ([@tambait](https://github.com/tambait))
+- [[#6676](https://github.com/sonata-project/SonataAdminBundle/pull/6676)] Deprecated `SonataAdminExtension::getTemplateRegistry()` method ([@tambait](https://github.com/tambait))
+- [[#6734](https://github.com/sonata-project/SonataAdminBundle/pull/6734)] Deprecate `DateOperatorType::TYPE_NULL` and `DateOperatorType::TYPE_NOT_NULL` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6760](https://github.com/sonata-project/SonataAdminBundle/pull/6760)] Added `PagerInterface::getResults()` ([@VincentLanglet](https://github.com/VincentLanglet))
+
+### Fixed
+- [[#6764](https://github.com/sonata-project/SonataAdminBundle/pull/6764)] Added missing phpdoc type declarations. ([@franmomu](https://github.com/franmomu))
+- [[#6758](https://github.com/sonata-project/SonataAdminBundle/pull/6758)] Fixed `Pool` definition arguments. ([@franmomu](https://github.com/franmomu))
+
+## [3.86.0](https://github.com/sonata-project/SonataAdminBundle/compare/3.85.0...3.86.0) - 2021-01-09
+### Added
+- [[#6732](https://github.com/sonata-project/SonataAdminBundle/pull/6732)] Added `PagerInterface::countResults` ([@dmaicher](https://github.com/dmaicher))
+- [[#6700](https://github.com/sonata-project/SonataAdminBundle/pull/6700)] Added `AbstractAdmin::getDefaultFilterParameters()` to get default filter parameters ([@kirya-dev](https://github.com/kirya-dev))
+- [[#6746](https://github.com/sonata-project/SonataAdminBundle/pull/6746)] `Added BaseGroupMapper::removeGroup()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6746](https://github.com/sonata-project/SonataAdminBundle/pull/6746)] `Added BaseGroupMapper::removeTab()` ([@VincentLanglet](https://github.com/VincentLanglet))
+
+### Changed
+- [[#6700](https://github.com/sonata-project/SonataAdminBundle/pull/6700)] Only changed (non default, non empty) filters will be submitted ([@kirya-dev](https://github.com/kirya-dev))
+
+### Deprecated
+- [[#6732](https://github.com/sonata-project/SonataAdminBundle/pull/6732)] `PagerInterface::getNbResults()` in favour of `countResults()` ([@dmaicher](https://github.com/dmaicher))
+- [[#6732](https://github.com/sonata-project/SonataAdminBundle/pull/6732)] `PagerInterface::setNbResults(...)` ([@dmaicher](https://github.com/dmaicher))
+- [[#6732](https://github.com/sonata-project/SonataAdminBundle/pull/6732)] `PagerInterface::$nbResults` ([@dmaicher](https://github.com/dmaicher))
+- [[#6735](https://github.com/sonata-project/SonataAdminBundle/pull/6735)] Deprecated `Pool::setAdminServiceIds` in favor of passing service ids as argument 2 to the constructor ([@franmomu](https://github.com/franmomu))
+- [[#6735](https://github.com/sonata-project/SonataAdminBundle/pull/6735)] Deprecated `Pool::setAdminGroups` in favor of passing service ids as argument 3 to the constructor ([@franmomu](https://github.com/franmomu))
+- [[#6735](https://github.com/sonata-project/SonataAdminBundle/pull/6735)] Deprecated `Pool::setAdminClasses` in favor of passing service ids as argument 4 to the constructor ([@franmomu](https://github.com/franmomu))
+- [[#6751](https://github.com/sonata-project/SonataAdminBundle/pull/6751)] Deprecated `CRUDController::configure()` method, to configure the associated admin, you should call `CRUDController::configureAdmin()` instead ([@franmomu](https://github.com/franmomu))
+- [[#6752](https://github.com/sonata-project/SonataAdminBundle/pull/6752)] Deprecated `TemplateRegistryInterface::TYPE_*` constants, they have been moved to `FieldDescriptionInterface` ([@franmomu](https://github.com/franmomu))
+
+## [3.85.0](https://github.com/sonata-project/SonataAdminBundle/compare/3.84.0...3.85.0) - 2021-01-02
+### Added
+- [[#6576](https://github.com/sonata-project/SonataAdminBundle/pull/6576)] Added generics to `AdminExtensionInterface`. ([@franmomu](https://github.com/franmomu))
+
+### Fixed
+- [[#6727](https://github.com/sonata-project/SonataAdminBundle/pull/6727)] Variable "admin" does not exist in `CRUD/Association/edit_many_script.html.twig` ([@ggabrovski](https://github.com/ggabrovski))
+
+## [3.84.0](https://github.com/sonata-project/SonataAdminBundle/compare/3.83.0...3.84.0) - 2021-01-02
+### Added
+- [[#6724](https://github.com/sonata-project/SonataAdminBundle/pull/6724)] Added support for fieldName with dot for `BaseFieldDescription::getFieldValue()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6713](https://github.com/sonata-project/SonataAdminBundle/pull/6713)] Added `AbstractTaggedAdmin::getListModes()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6713](https://github.com/sonata-project/SonataAdminBundle/pull/6713)] Added `TaggedAdminInterface::getListModes()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6699](https://github.com/sonata-project/SonataAdminBundle/pull/6699)] Added `RouteCollectionInterface` imported from `4.x` to ease upgrading process ([@franmomu](https://github.com/franmomu))
+- [[#6720](https://github.com/sonata-project/SonataAdminBundle/pull/6720)] One argument to `BaseFieldDescription::construct()` to set the field name ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getPage()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getFirstPage()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getLastPage()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getNextPage()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getPreviousPage()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `isFirstPage()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `isLastPage()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getNbResults()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getLinks()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `haveToPaginate()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `getQuery()` to the PagerInterface ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Added `TaggedAdminInterface` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Added `AbstractTaggedAdmin` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Added `AbstractAdmin::hasFilterPersister()` method ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6654](https://github.com/sonata-project/SonataAdminBundle/pull/6654)] Added `Sonata\AdminBundle\Filter\Filter::active` property ([@VincentLanglet](https://github.com/VincentLanglet))
+
+### Deprecated
+- [[#6716](https://github.com/sonata-project/SonataAdminBundle/pull/6716)] `FieldDescriptionInterface::getFieldValue()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6720](https://github.com/sonata-project/SonataAdminBundle/pull/6720)] `FieldDescriptionInterface::setFieldMapping()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6720](https://github.com/sonata-project/SonataAdminBundle/pull/6720)] `BaseFieldDescription::setFieldMapping()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getCurrentMaxLink()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getMaxRecordLimit()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::setMaxRecordLimit()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getCursor()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::setCursor()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getObjectByCursor()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getCurrent()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getNext()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getPrevious()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getFirstIndex()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getLastIndex()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getParameters()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::getParameter()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::hasParameter()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6541](https://github.com/sonata-project/SonataAdminBundle/pull/6541)] `AbstractPager::setParameter()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate instantiating a new `AbstractAdmin` class with `null` as third argument ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getManagerType()` when no manager type is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getFilterPersister()` when no filter persister is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getModelManager()` when no model manager is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getDataSource()` when no data source is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getFormContractor()` when no form contractor is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getShowBuilder()` when no show builder is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getListBuilder()` when no list builder is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getDatagridBuilder()` when no datagrid builder is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getTranslator()` when no translator is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getConfigurationPool()` when no pool is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate `AbstractAdmin::setValidator()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate `AbstractAdmin::getValidator()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getSecurityHandler()` when no security handler is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getMenuFactory()` when no menu factory is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getRouteBuilder()` when no route builder is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6614](https://github.com/sonata-project/SonataAdminBundle/pull/6614)] Deprecate calling `AbstractAdmin::getLabelTranslatorStrategy()` when no label translator strategy is set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6694](https://github.com/sonata-project/SonataAdminBundle/pull/6694)] Deprecated passing other type than `string` or `null` as argument 2 constructing `FormBuilderIterator` ([@franmomu](https://github.com/franmomu))
+- [[#6654](https://github.com/sonata-project/SonataAdminBundle/pull/6654)] `Sonata\AdminBundle\Filter\Filter::getValue()` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6654](https://github.com/sonata-project/SonataAdminBundle/pull/6654)] `Sonata\AdminBundle\Filter\Filter::setValue()` ([@VincentLanglet](https://github.com/VincentLanglet))
+
+### Fixed
+- [[#6702](https://github.com/sonata-project/SonataAdminBundle/pull/6702)] Stop throwing an exception when the `_per_page`  filter parameter is not set ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6722](https://github.com/sonata-project/SonataAdminBundle/pull/6722)] Replaced 'array[0]' by 'array|first' to fix edit_many_to_many template when children index does not start with 0 ([@nws-jstorm](https://github.com/nws-jstorm))
+- [[#6677](https://github.com/sonata-project/SonataAdminBundle/pull/6677)] Fixed using `admin_pool` to fetch an option instead of `sonata_config` ([@franmomu](https://github.com/franmomu))
+- [[#6694](https://github.com/sonata-project/SonataAdminBundle/pull/6694)] Fixed iterating over children names in `AdminHelper::getChildFormBuilder` recursively ([@franmomu](https://github.com/franmomu))
+- [[#6675](https://github.com/sonata-project/SonataAdminBundle/pull/6675)] Fixed disallowing sorting in a field defined with a closure in `associated_property` ([@franmomu](https://github.com/franmomu))
+
+## [3.83.0](https://github.com/sonata-project/SonataAdminBundle/compare/3.82.0...3.83.0) - 2020-12-08
+### Added
+- [[#6651](https://github.com/sonata-project/SonataAdminBundle/pull/6651)] Add support for global admin extensions via config ([@core23](https://github.com/core23))
+- [[#6640](https://github.com/sonata-project/SonataAdminBundle/pull/6640)] Added `SonataConfiguration` class to handle sonata global configuration. ([@franmomu](https://github.com/franmomu))
+- [[#6640](https://github.com/sonata-project/SonataAdminBundle/pull/6640)] Added global Twig `sonata_config` to access global configuration from Twig. ([@franmomu](https://github.com/franmomu))
+- [[#6648](https://github.com/sonata-project/SonataAdminBundle/pull/6648)] Added 3 new arguments to `BaseFieldDescription::__construct()` to do create a FieldDescription with the mapping. ([@franmomu](https://github.com/franmomu))
+
+### Deprecated
+- [[#6659](https://github.com/sonata-project/SonataAdminBundle/pull/6659)] Deprecated `Pool::getGroups()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6659](https://github.com/sonata-project/SonataAdminBundle/pull/6659)] Deprecated `Pool::hasGroup()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6659](https://github.com/sonata-project/SonataAdminBundle/pull/6659)] Deprecated `Pool::getAdminsByGroup()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6633](https://github.com/sonata-project/SonataAdminBundle/pull/6633)] `AbstractAdmin::$validator` property ([@tambait](https://github.com/tambait))
+- [[#6633](https://github.com/sonata-project/SonataAdminBundle/pull/6633)] `AdminInterface::getValidator` method specification ([@tambait](https://github.com/tambait))
+- [[#6633](https://github.com/sonata-project/SonataAdminBundle/pull/6633)] `AdminInterface::setValidator` method specification ([@tambait](https://github.com/tambait))
+- [[#6633](https://github.com/sonata-project/SonataAdminBundle/pull/6633)] `AbstractAdmin::getValidator` method implementation ([@tambait](https://github.com/tambait))
+- [[#6633](https://github.com/sonata-project/SonataAdminBundle/pull/6633)] `AbstractAdmin::setValidator` method implementation ([@tambait](https://github.com/tambait))
+- [[#6633](https://github.com/sonata-project/SonataAdminBundle/pull/6633)] `AddDependencyCallsCompilerPass` - validator related keys ([@tambait](https://github.com/tambait))
+- [[#6633](https://github.com/sonata-project/SonataAdminBundle/pull/6633)] `DependencyInjection/Configuration` - validator related config option ([@tambait](https://github.com/tambait))
+- [[#6640](https://github.com/sonata-project/SonataAdminBundle/pull/6640)] Deprecated `Pool::getTitle()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6640](https://github.com/sonata-project/SonataAdminBundle/pull/6640)] Deprecated `Pool::getTitleLogo()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6640](https://github.com/sonata-project/SonataAdminBundle/pull/6640)] Deprecated `Pool::getOption()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6640](https://github.com/sonata-project/SonataAdminBundle/pull/6640)] Deprecated global Twig `sonata_admin` variable. ([@franmomu](https://github.com/franmomu))
+- [[#6648](https://github.com/sonata-project/SonataAdminBundle/pull/6648)] Deprecated `FieldDescriptionInterface::setFieldMapping()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6648](https://github.com/sonata-project/SonataAdminBundle/pull/6648)] Deprecated `FieldDescriptionInterface::setAssociationMapping()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6648](https://github.com/sonata-project/SonataAdminBundle/pull/6648)] Deprecated `FieldDescriptionInterface::setParentAssociationMappings()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6648](https://github.com/sonata-project/SonataAdminBundle/pull/6648)] Deprecated `FieldDescriptionInterface::setMappingType()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6648](https://github.com/sonata-project/SonataAdminBundle/pull/6648)] Deprecated `BaseFieldDescription::setMappingType()` method. ([@franmomu](https://github.com/franmomu))
+
+### Fixed
+- [[#6665](https://github.com/sonata-project/SonataAdminBundle/pull/6665)] Fixed triggering a deprecation in a check. ([@franmomu](https://github.com/franmomu))
+- [[#6662](https://github.com/sonata-project/SonataAdminBundle/pull/6662)] Incorrect object being passed to the view when rendering the history compare action ([@tamcy](https://github.com/tamcy))
+
+## [3.82.0](https://github.com/sonata-project/SonataAdminBundle/compare/3.81.1...3.82.0) - 2020-12-05
+### Added
+- [[#6643](https://github.com/sonata-project/SonataAdminBundle/pull/6643)] Added generics to `CRUDController` ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6631](https://github.com/sonata-project/SonataAdminBundle/pull/6631)] Option to globally override the data source of all the admin ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6547](https://github.com/sonata-project/SonataAdminBundle/pull/6547)] Added `row_attr` to the form_row container. ([@nieuwenhuisen](https://github.com/nieuwenhuisen))
+- [[#6609](https://github.com/sonata-project/SonataAdminBundle/pull/6609)] `AdminSearchCompilerPass` in order to configure which admins must support search. ([@phansys](https://github.com/phansys))
+- [[#6609](https://github.com/sonata-project/SonataAdminBundle/pull/6609)] Support for `global_search` attribute in `sonata.admin` tags, which admits boolean values. ([@phansys](https://github.com/phansys))
+
+### Changed
+- [[#6559](https://github.com/sonata-project/SonataAdminBundle/pull/6559)] Removed alias from `ModelManagerInterface::createQuery` method ([@neok](https://github.com/neok))
+- [[#6214](https://github.com/sonata-project/SonataAdminBundle/pull/6214)] `CRUDController::handleXmlHttpRequestSuccessResponse` method is now protected ([@nieuwenhuisen](https://github.com/nieuwenhuisen))
+- [[#6214](https://github.com/sonata-project/SonataAdminBundle/pull/6214)] `CRUDController::handleXmlHttpRequestErrorResponse` method is now protected ([@nieuwenhuisen](https://github.com/nieuwenhuisen))
+- [[#6630](https://github.com/sonata-project/SonataAdminBundle/pull/6630)] Replaced jQuery "load()" with "on()" in Admin.js ([@timwentzell](https://github.com/timwentzell))
+- [[#6632](https://github.com/sonata-project/SonataAdminBundle/pull/6632)] Twig templates: "list_percent", "show_percent", "list_currency" and "show_currency" ([@willemverspyck](https://github.com/willemverspyck))
+
+### Deprecated
+- [[#6618](https://github.com/sonata-project/SonataAdminBundle/pull/6618)] `AdminInterface::validate` method specification ([@tambait](https://github.com/tambait))
+- [[#6618](https://github.com/sonata-project/SonataAdminBundle/pull/6618)] `AbstractAdmin:validate` method implementation ([@tambait](https://github.com/tambait))
+- [[#6618](https://github.com/sonata-project/SonataAdminBundle/pull/6618)] `AbstractAdmin::attachInlineValidator()` method ([@tambait](https://github.com/tambait))
+- [[#6618](https://github.com/sonata-project/SonataAdminBundle/pull/6618)] `AdminExtensionInterface::validate()` method specification ([@tambait](https://github.com/tambait))
+- [[#6618](https://github.com/sonata-project/SonataAdminBundle/pull/6618)] `AbstractAdminExtension::validate()` method implementation ([@tambait](https://github.com/tambait))
+- [[#6622](https://github.com/sonata-project/SonataAdminBundle/pull/6622)] Referencing to DashboardAction and SearchAction by FQCN class instead of id. ([@VincentLanglet](https://github.com/VincentLanglet))
+- [[#6634](https://github.com/sonata-project/SonataAdminBundle/pull/6634)] Deprecated `Pool::getPropertyAccessor()` method. ([@franmomu](https://github.com/franmomu))
+- [[#6634](https://github.com/sonata-project/SonataAdminBundle/pull/6634)] Deprecated not passing and instance of `PropertyAccessor` as argument 1 to `Sonata\AdminBundle\Admin\AdminHelper` constructor. ([@franmomu](https://github.com/franmomu))
+- [[#6634](https://github.com/sonata-project/SonataAdminBundle/pull/6634)] Deprecated not passing and instance of `PropertyAccessor` as argument 5 to `Sonata\AdminBundle\Action\SetObjectFieldValueAction` constructor. ([@franmomu](https://github.com/franmomu))
+- [[#6634](https://github.com/sonata-project/SonataAdminBundle/pull/6634)] Deprecated not passing and instance of `PropertyAccessor` as argument 5 to `Sonata\AdminBundle\Twig\Extension\SonataAdminExtension` constructor. ([@franmomu](https://github.com/franmomu))
+
+### Fixed
+- [[#6529](https://github.com/sonata-project/SonataAdminBundle/pull/6529)] Explicitly cast types in `CRUDController::batchAction()` ([@peter-gribanov](https://github.com/peter-gribanov))
+
 ## [3.81.1](https://github.com/sonata-project/SonataAdminBundle/compare/3.81.0...3.81.1) - 2020-11-21
 ### Fixed
 - [[#6597](https://github.com/sonata-project/SonataAdminBundle/pull/6597)] `AdminInterface` extends `MutableTemplateRegistryAwareInterface` instead of `TemplateRegistryAwareInterface` ([@VincentLanglet](https://github.com/VincentLanglet))

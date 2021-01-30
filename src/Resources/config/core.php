@@ -27,6 +27,7 @@ use Sonata\AdminBundle\Model\AuditManager;
 use Sonata\AdminBundle\Model\AuditManagerInterface;
 use Sonata\AdminBundle\Route\AdminPoolLoader;
 use Sonata\AdminBundle\Search\SearchHandler;
+use Sonata\AdminBundle\SonataConfiguration;
 use Sonata\AdminBundle\Templating\MutableTemplateRegistryInterface;
 use Sonata\AdminBundle\Templating\TemplateRegistry;
 use Sonata\AdminBundle\Translator\BCLabelTranslatorStrategy;
@@ -36,7 +37,6 @@ use Sonata\AdminBundle\Translator\LabelTranslatorStrategyInterface;
 use Sonata\AdminBundle\Translator\NativeLabelTranslatorStrategy;
 use Sonata\AdminBundle\Translator\NoopLabelTranslatorStrategy;
 use Sonata\AdminBundle\Translator\UnderscoreLabelTranslatorStrategy;
-use Sonata\AdminBundle\Twig\GlobalVariables;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
 
@@ -48,14 +48,22 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->set('sonata.admin.pool', Pool::class)
             ->public()
             ->args([
-                new ReferenceConfigurator('service_container'),
-                '',
-                '',
-                [],
-                new ReferenceConfigurator('property_accessor'),
+                null, // admin service locator
+                [], // admin service ids
+                [], // admin service groups
+                [], // admin service classes
             ])
 
         ->alias(Pool::class, 'sonata.admin.pool')
+
+        ->set('sonata.admin.configuration', SonataConfiguration::class)
+            ->args([
+                '',
+                '',
+                [],
+            ])
+
+        ->alias(SonataConfiguration::class, 'sonata.admin.configuration')
 
         ->set('sonata.admin.route_loader', AdminPoolLoader::class)
             ->public()
@@ -170,15 +178,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->set('sonata.admin.lock.extension', LockExtension::class)
             ->public()
             ->tag('sonata.admin.extension', ['global' => true])
-
-        ->set('sonata.admin.twig.global', GlobalVariables::class)
-            ->public()
-            ->args([
-                new ReferenceConfigurator('sonata.admin.pool'),
-                '%sonata.admin.configuration.mosaic_background%',
-            ])
-
-        ->alias(GlobalVariables::class, 'sonata.admin.twig.global')
 
         ->set('sonata.admin.filter_persister.session', SessionFilterPersister::class)
             ->args([

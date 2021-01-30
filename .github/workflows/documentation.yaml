@@ -11,11 +11,14 @@ on:
             - master
     pull_request:
 
+env:
+    ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
 jobs:
     build:
         name: Sphinx build
 
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-latest
 
         steps:
             - name: Checkout
@@ -49,7 +52,7 @@ jobs:
     doctor-rst:
         name: DOCtor-RST
 
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-latest
 
         steps:
             - name: Checkout

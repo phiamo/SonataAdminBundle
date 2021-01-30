@@ -15,6 +15,8 @@ namespace Sonata\AdminBundle\Admin;
 
 use Doctrine\Inflector\InflectorFactory;
 use Sonata\AdminBundle\Exception\NoValueException;
+use Symfony\Component\PropertyAccess\Exception\ExceptionInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * A FieldDescription hold the information about a field. A typical
@@ -79,17 +81,17 @@ abstract class BaseFieldDescription implements FieldDescriptionInterface
     protected $fieldName;
 
     /**
-     * @var array<string, mixed> the ORM association mapping
+     * @var array<string, mixed> association mapping
      */
     protected $associationMapping = [];
 
     /**
-     * @var array<string, mixed> the ORM field information
+     * @var array<string, mixed> field information
      */
     protected $fieldMapping = [];
 
     /**
-     * @var array<string, mixed> the ORM parent mapping association
+     * @var array<string, mixed> parent mapping association
      */
     protected $parentAssociationMappings = [];
 
@@ -125,15 +127,35 @@ abstract class BaseFieldDescription implements FieldDescriptionInterface
      */
     private static $fieldGetters = [];
 
-    public function __construct(string $name, array $options = [])
-    {
+    public function __construct(
+        string $name,
+        array $options = [],
+        array $fieldMapping = [],
+        array $associationMapping = [],
+        array $parentAssociationMappings = [],
+        ?string $fieldName = null
+    ) {
         $this->setName($name);
-        $this->setOptions($options);
-    }
 
-    public function setFieldName(?string $fieldName): void
-    {
+        if (null === $fieldName) {
+            $fieldName = $name;
+        }
+
         $this->fieldName = $fieldName;
+
+        $this->setOptions($options);
+
+        if ([] !== $fieldMapping) {
+            $this->setFieldMapping($fieldMapping);
+        }
+
+        if ([] !== $associationMapping) {
+            $this->setAssociationMapping($associationMapping);
+        }
+
+        if ([] !== $parentAssociationMappings) {
+            $this->setParentAssociationMappings($parentAssociationMappings);
+        }
     }
 
     public function getFieldName(): ?string
@@ -144,10 +166,6 @@ abstract class BaseFieldDescription implements FieldDescriptionInterface
     public function setName(string $name): void
     {
         $this->name = $name;
-
-        if (!$this->getFieldName()) {
-            $this->setFieldName(substr(strrchr('.'.$name, '.'), 1));
-        }
     }
 
     public function getName(): string
@@ -270,23 +288,98 @@ abstract class BaseFieldDescription implements FieldDescriptionInterface
         return null !== $this->associationAdmin;
     }
 
+    /**
+     * NEXT_MAJOR: Change the visibility to protected.
+     *
+     * @throws NoValueException
+     *
+     * @return mixed
+     */
     public function getFieldValue(?object $object, ?string $fieldName)
     {
         if ($this->isVirtual() || null === $object) {
             return null;
         }
 
-        $getters = [];
-        $parameters = [];
+        $dotPos = strpos($fieldName, '.');
+        if ($dotPos > 0) {
+            $child = $this->getFieldValue($object, substr($fieldName, 0, $dotPos));
+            if (null !== $child && !\is_object($child)) {
+                throw new NoValueException(sprintf(
+                    <<<'EXCEPTION'
+                    Unexpected value when accessing to the property "%s" on the class "%s" for the field "%s".
+                    Expected object|null, got %s.
+                    EXCEPTION,
+                    $fieldName,
+                    \get_class($object),
+                    $this->getName(),
+                    \gettype($child)
+                ));
+            }
+
+            return $this->getFieldValue($child, substr($fieldName, $dotPos + 1));
+        }
 
         // prefer method name given in the code option
         if ($this->getOption('code')) {
-            $getters[] = $this->getOption('code');
+            $getter = $this->getOption('code');
+
+            if (!method_exists($object, $getter)) {
+                @trigger_error(
+                    'Passing a non-existing method in the "code" option is deprecated'
+                    .' since sonata-project/admin-bundle 3.x and will throw an exception in 4.0.',
+                    \E_USER_DEPRECATED
+                );
+
+            // NEXT_MAJOR: Remove the deprecation and uncomment the next line.
+//                throw new \LogicException('The method "%s"() does not exist.', $getter);
+            } elseif (!\is_callable([$object, $getter])) {
+                @trigger_error(
+                    'Passing a non-callable method in the "code" option is deprecated'
+                    .' since sonata-project/admin-bundle 3.x and will throw an exception in 4.0.',
+                    \E_USER_DEPRECATED
+                );
+
+            // NEXT_MAJOR: Remove the deprecation and uncomment the next line.
+//                throw new \LogicException('The method "%s"() does not have public access.', $getter);
+            } else {
+                if ($this->getOption('parameters')) {
+                    @trigger_error(
+                        'The option "parameters" is deprecated since sonata-project/admin-bundle 3.x and will be removed in 4.0.',
+                        \E_USER_DEPRECATED
+                    );
+
+                    return $object->{$getter}(...$this->getOption('parameters'));
+                }
+
+                return $object->{$getter}();
+            }
         }
-        // parameters for the method given in the code option
-        if ($this->getOption('parameters')) {
-            $parameters = $this->getOption('parameters');
+
+        // NEXT_MAJOR: Remove the condition code and the else part
+        if (!$this->getOption('parameters')) {
+            $propertyAccesor = PropertyAccess::createPropertyAccessorBuilder()
+                ->enableMagicCall()
+                ->getPropertyAccessor();
+
+            try {
+                return $propertyAccesor->getValue($object, $fieldName);
+            } catch (ExceptionInterface $exception) {
+                throw new NoValueException(
+                    sprintf('Cannot access property "%s" in class "%s".', $this->getName(), \get_class($object)),
+                    $exception->getCode(),
+                    $exception
+                );
+            }
         }
+
+        @trigger_error(
+            'The option "parameters" is deprecated since sonata-project/admin-bundle 3.x and will be removed in 4.0.',
+            \E_USER_DEPRECATED
+        );
+
+        $getters = [];
+        $parameters = $this->getOption('parameters');
 
         if (\is_string($fieldName) && '' !== $fieldName) {
             if ($this->hasCachedFieldGetter($object, $fieldName)) {
@@ -295,6 +388,7 @@ abstract class BaseFieldDescription implements FieldDescriptionInterface
 
             $camelizedFieldName = InflectorFactory::create()->build()->classify($fieldName);
 
+            $getters[] = lcfirst($camelizedFieldName);
             $getters[] = sprintf('get%s', $camelizedFieldName);
             $getters[] = sprintf('is%s', $camelizedFieldName);
             $getters[] = sprintf('has%s', $camelizedFieldName);
@@ -365,11 +459,6 @@ abstract class BaseFieldDescription implements FieldDescriptionInterface
         $this->setOptions(array_merge_recursive($this->options, $options));
     }
 
-    public function setMappingType($mappingType): void
-    {
-        $this->mappingType = $mappingType;
-    }
-
     public function getMappingType()
     {
         return $this->mappingType;
@@ -407,6 +496,21 @@ abstract class BaseFieldDescription implements FieldDescriptionInterface
     {
         return false !== $this->getOption('virtual_field', false);
     }
+
+    /**
+     * @param array<string, mixed> $fieldMapping
+     */
+    abstract protected function setFieldMapping(array $fieldMapping): void;
+
+    /**
+     * @param array<string, mixed> $associationMapping
+     */
+    abstract protected function setAssociationMapping(array $associationMapping): void;
+
+    /**
+     *  @param array<array<string, mixed>> $parentAssociationMappings
+     */
+    abstract protected function setParentAssociationMappings(array $parentAssociationMappings): void;
 
     private function getFieldGetterKey(object $object, ?string $fieldName): ?string
     {

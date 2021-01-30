@@ -18,16 +18,19 @@ use Sonata\AdminBundle\Datagrid\PagerInterface;
 use Sonata\AdminBundle\Filter\FilterInterface;
 
 /**
- * @final since sonata-project/admin-bundle 3.52
- *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class SearchHandler
+final class SearchHandler
 {
     /**
      * @var bool
      */
     private $caseSensitive;
+
+    /**
+     * @var array<string, bool>
+     */
+    private $adminsSearchConfig = [];
 
     public function __construct(bool $caseSensitive = true)
     {
@@ -39,6 +42,11 @@ class SearchHandler
      */
     public function search(AdminInterface $admin, string $term, int $page = 0, int $offset = 20): ?PagerInterface
     {
+        // If the search is disabled for the whole admin, skip any further processing.
+        if (false === ($this->adminsSearchConfig[$admin->getCode()] ?? true)) {
+            return null;
+        }
+
         $datagrid = $admin->getDatagrid();
 
         $found = false;
@@ -65,5 +73,16 @@ class SearchHandler
         $pager->init();
 
         return $pager;
+    }
+
+    /**
+     * Sets whether the search must be enabled or not for the passed admin codes.
+     * Receives an array with the admin code as key and a boolean as value.
+     *
+     * @param array<string, bool> $adminsSearchConfig
+     */
+    public function configureAdminSearch(array $adminsSearchConfig): void
+    {
+        $this->adminsSearchConfig = $adminsSearchConfig;
     }
 }

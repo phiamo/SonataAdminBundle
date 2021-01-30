@@ -20,10 +20,12 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Sonata\Form\Validator\ErrorElement;
 
 /**
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
+ *
+ * @phpstan-template T of object
+ * @template-implements AdminExtensionInterface<T>
  */
 abstract class AbstractAdminExtension implements AdminExtensionInterface
 {
@@ -51,10 +53,6 @@ abstract class AbstractAdminExtension implements AdminExtensionInterface
     {
     }
 
-    public function validate(AdminInterface $admin, ErrorElement $errorElement, object $object): void
-    {
-    }
-
     public function configureQuery(AdminInterface $admin, ProxyQueryInterface $query): void
     {
     }
@@ -75,7 +73,7 @@ abstract class AbstractAdminExtension implements AdminExtensionInterface
     /**
      * @return array<string, string|string[]>
      *
-     * @phpstan-param AdminInterface<object> $admin
+     * @phpstan-param AdminInterface<T> $admin
      */
     public function getAccessMapping(AdminInterface $admin): array
     {
@@ -83,7 +81,7 @@ abstract class AbstractAdminExtension implements AdminExtensionInterface
     }
 
     /**
-     * @phpstan-param AdminInterface<object> $admin
+     * @phpstan-param AdminInterface<T> $admin
      */
     public function configureBatchActions(AdminInterface $admin, array $actions): array
     {
@@ -91,7 +89,7 @@ abstract class AbstractAdminExtension implements AdminExtensionInterface
     }
 
     /**
-     * @phpstan-param AdminInterface<object> $admin
+     * @phpstan-param AdminInterface<T> $admin
      */
     public function configureExportFields(AdminInterface $admin, array $fields): array
     {
@@ -127,7 +125,7 @@ abstract class AbstractAdminExtension implements AdminExtensionInterface
      *
      * @return array<string, mixed>
      *
-     * @phpstan-param AdminInterface<object> $admin
+     * @phpstan-param AdminInterface<T> $admin
      */
     public function configureActionButtons(
         AdminInterface $admin,
@@ -141,16 +139,23 @@ abstract class AbstractAdminExtension implements AdminExtensionInterface
     /**
      * Returns a list of default filters.
      *
-     * @phpstan-param AdminInterface<object> $admin
+     * @phpstan-param AdminInterface<T> $admin
      */
     public function configureDefaultFilterValues(AdminInterface $admin, array &$filterValues): void
     {
     }
 
     /**
-     * @phpstan-param AdminInterface<object> $admin
+     * @phpstan-param AdminInterface<T> $admin
      */
     public function configureDefaultSortValues(AdminInterface $admin, array &$sortValues): void
+    {
+    }
+
+    /**
+     * @phpstan-param AdminInterface<T> $admin
+     */
+    public function configureFormOptions(AdminInterface $admin, array &$formOptions): void
     {
     }
 }

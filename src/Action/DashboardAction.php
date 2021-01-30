@@ -79,7 +79,6 @@ final class DashboardAction
             'base_template' => $request->isXmlHttpRequest() ?
                 $this->templateRegistry->getTemplate('ajax') :
                 $this->templateRegistry->getTemplate('layout'),
-            'admin_pool' => $this->pool,
             'blocks' => $blocks,
         ];
 

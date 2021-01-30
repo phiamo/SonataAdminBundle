@@ -26,11 +26,6 @@ abstract class Filter implements FilterInterface
     protected $name;
 
     /**
-     * @var mixed
-     */
-    protected $value;
-
-    /**
      * @var array<string, mixed>
      */
     protected $options = [];
@@ -39,6 +34,11 @@ abstract class Filter implements FilterInterface
      * @var string|null
      */
     protected $condition;
+
+    /**
+     * @var bool
+     */
+    private $active = false;
 
     public function initialize(string $name, array $options = []): void
     {
@@ -186,29 +186,9 @@ abstract class Filter implements FilterInterface
         return $this->options;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value): void
-    {
-        $this->value = $value;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
     public function isActive(): bool
     {
-        $values = $this->getValue();
-
-        return isset($values['value'])
-            && false !== $values['value']
-            && '' !== $values['value'];
+        return $this->active;
     }
 
     public function setCondition(string $condition): void
@@ -224,5 +204,10 @@ abstract class Filter implements FilterInterface
     public function getTranslationDomain(): ?string
     {
         return $this->getOption('translation_domain');
+    }
+
+    protected function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 }

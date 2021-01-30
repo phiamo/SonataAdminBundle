@@ -47,7 +47,7 @@ class GenerateObjectAclCommandTest extends TestCase
 
     public function testExecuteWithDeprecatedDoctrineService(): void
     {
-        $pool = new Pool($this->container, '', '');
+        $pool = new Pool($this->container);
 
         $command = new GenerateObjectAclCommand($pool, []);
 
@@ -63,7 +63,7 @@ class GenerateObjectAclCommandTest extends TestCase
 
     public function testExecuteWithEmptyManipulators(): void
     {
-        $pool = new Pool($this->container, '', '');
+        $pool = new Pool($this->container);
 
         $command = new GenerateObjectAclCommand($pool, []);
 
@@ -80,11 +80,11 @@ class GenerateObjectAclCommandTest extends TestCase
     public function testExecuteWithManipulatorNotFound(): void
     {
         $admin = $this->createStub(AbstractAdmin::class);
-        $pool = $this->createStub(Pool::class);
+        $container = new Container();
+        $container->set('acme.admin.foo', $admin);
+        $pool = new Pool($container, ['acme.admin.foo']);
 
         $admin->method('getManagerType')->willReturn('bar');
-        $pool->method('getAdminServiceIds')->willReturn(['acme.admin.foo']);
-        $pool->method('getInstance')->willReturn($admin);
 
         $aclObjectManipulators = [
             'bar' => new \stdClass(),
@@ -105,11 +105,11 @@ class GenerateObjectAclCommandTest extends TestCase
     public function testExecuteWithManipulatorNotObjectAclManipulatorInterface(): void
     {
         $admin = $this->createStub(AbstractAdmin::class);
-        $pool = $this->createStub(Pool::class);
+        $container = new Container();
+        $container->set('acme.admin.foo', $admin);
+        $pool = new Pool($container, ['acme.admin.foo']);
 
         $admin->method('getManagerType')->willReturn('bar');
-        $pool->method('getAdminServiceIds')->willReturn(['acme.admin.foo']);
-        $pool->method('getInstance')->willReturn($admin);
 
         $aclObjectManipulators = [
             'sonata.admin.manipulator.acl.object.bar' => new \stdClass(),
@@ -130,11 +130,11 @@ class GenerateObjectAclCommandTest extends TestCase
     public function testExecuteWithManipulator(): void
     {
         $admin = $this->createStub(AbstractAdmin::class);
-        $pool = $this->createStub(Pool::class);
+        $container = new Container();
+        $container->set('acme.admin.foo', $admin);
+        $pool = new Pool($container, ['acme.admin.foo']);
 
         $admin->method('getManagerType')->willReturn('bar');
-        $pool->method('getAdminServiceIds')->willReturn(['acme.admin.foo']);
-        $pool->method('getInstance')->willReturn($admin);
 
         $manipulator = $this->createMock(ObjectAclManipulatorInterface::class);
         $manipulator->expects($this->once())->method('batchConfigureAcls')
@@ -157,19 +157,13 @@ class GenerateObjectAclCommandTest extends TestCase
     public function testExecuteWithUserModel(): void
     {
         $admin = $this->createStub(AbstractAdmin::class);
-        $pool = $this->createStub(Pool::class);
+        $container = new Container();
+        $container->set('acme.admin.foo', $admin);
+        $pool = new Pool($container, ['acme.admin.foo']);
 
         $admin
             ->method('getManagerType')
             ->willReturn('bar');
-
-        $pool
-            ->method('getAdminServiceIds')
-            ->willReturn(['acme.admin.foo']);
-
-        $pool
-            ->method('getInstance')
-            ->willReturn($admin);
 
         $manipulator = $this->createMock(ObjectAclManipulatorInterface::class);
         $manipulator

@@ -51,9 +51,6 @@ class FilterTest extends TestCase
 
         $this->assertSame('default', $filter->getOption('fake', 'default'));
 
-        $filter->setValue(42);
-        $this->assertSame(42, $filter->getValue());
-
         $filter->setCondition('>');
         $this->assertSame('>', $filter->getCondition());
     }
@@ -128,29 +125,13 @@ class FilterTest extends TestCase
         $filter->getFieldName();
     }
 
-    /**
-     * @dataProvider isActiveData
-     *
-     * @param $expected
-     * @param $value
-     */
-    public function testIsActive(bool $expected, array $value): void
+    public function testIsActive(): void
     {
         $filter = new FooFilter();
-        $filter->setValue($value);
+        $this->assertFalse($filter->isActive());
 
-        $this->assertSame($expected, $filter->isActive());
-    }
-
-    public function isActiveData(): array
-    {
-        return [
-            [false, []],
-            [false, ['value' => null]],
-            [false, ['value' => '']],
-            [false, ['value' => false]],
-            [true, ['value' => 'active']],
-        ];
+        $filter->callSetActive(true);
+        $this->assertTrue($filter->isActive());
     }
 
     public function testGetTranslationDomain(): void

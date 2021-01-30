@@ -51,6 +51,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
+ *
+ * @phpstan-template T of object
  */
 class CRUDController extends AbstractController
 {
@@ -58,6 +60,8 @@ class CRUDController extends AbstractController
      * The related Admin class.
      *
      * @var AdminInterface
+     *
+     * @phpstan-var AdminInterface<T>
      */
     protected $admin;
 
@@ -68,11 +72,14 @@ class CRUDController extends AbstractController
      */
     private $templateRegistry;
 
+    /**
+     * NEXT_MAJOR: We should not use this method for configuration, create a listener to call configureAdmin method.
+     */
     public function setContainer(ContainerInterface $container): ?ContainerInterface
     {
         $result = parent::setContainer($container);
 
-        $this->configure();
+        $this->configure('sonata_deprecation_mute');
 
         return $result;
     }
@@ -285,6 +292,7 @@ class CRUDController extends AbstractController
 
             // persist if the form was valid and if in preview mode the preview was approved
             if ($isFormValid && (!$this->isInPreviewMode() || $this->isPreviewApproved())) {
+                /** @phpstan-var T $submittedObject */
                 $submittedObject = $form->getData();
                 $this->admin->setSubject($submittedObject);
 
@@ -381,8 +389,8 @@ class CRUDController extends AbstractController
 
         if ($data = json_decode((string) $request->get('data', ''), true)) {
             $action = $data['action'];
-            $idx = $data['idx'];
-            $allElements = (bool) $data['all_elements'];
+            $idx = (array) ($data['idx'] ?? []);
+            $allElements = (bool) ($data['all_elements'] ?? false);
             $forwardedRequest->request->replace(array_merge($forwardedRequest->request->all(), $data));
         } else {
             $action = $forwardedRequest->request->get('action');
@@ -392,7 +400,7 @@ class CRUDController extends AbstractController
                 // symfony 5.1+
                 $idx = $bag->all('idx');
             } else {
-                $idx = $bag->get('idx', []);
+                $idx = (array) $bag->get('idx', []);
             }
             $allElements = $forwardedRequest->request->getBoolean('all_elements');
 
@@ -400,6 +408,7 @@ class CRUDController extends AbstractController
             $forwardedRequest->request->set('all_elements', $allElements);
 
             $data = $forwardedRequest->request->all();
+            $data['all_elements'] = $allElements;
 
             unset($data['_sonata_csrf_token']);
         }
@@ -532,6 +541,7 @@ class CRUDController extends AbstractController
 
             // persist if the form was valid and if in preview mode the preview was approved
             if ($isFormValid && (!$this->isInPreviewMode() || $this->isPreviewApproved())) {
+                /** @phpstan-var T $submittedObject */
                 $submittedObject = $form->getData();
                 $this->admin->setSubject($submittedObject);
                 $this->admin->checkAccess('create', $submittedObject);
@@ -904,6 +914,55 @@ class CRUDController extends AbstractController
     }
 
     /**
+     * Contextualize the admin class depends on the current request.
+     *
+     * @throws \InvalidArgumentException
+     */
+    final public function configureAdmin(Request $request): void
+    {
+        $adminCode = $request->get('_sonata_admin');
+
+        if (null === $adminCode) {
+            throw new \InvalidArgumentException(sprintf(
+                'There is no `_sonata_admin` defined for the controller `%s` and the current route `%s`.',
+                static::class,
+                $request->get('_route')
+            ));
+        }
+
+        try {
+            $this->admin = $this->get('sonata.admin.pool')->getAdminByAdminCode($adminCode);
+        } catch (\InvalidArgumentException $e) {
+            throw new \RuntimeException(sprintf(
+                'Unable to find the admin class related to the current controller (%s).',
+                static::class
+            ));
+        }
+
+        if (!$this->admin->hasTemplateRegistry()) {
+            throw new \RuntimeException(sprintf(
+                'Unable to find the template registry related to the current admin (%s).',
+                $this->admin->getCode()
+            ));
+        }
+
+        $this->templateRegistry = $this->admin->getTemplateRegistry();
+
+        $rootAdmin = $this->admin;
+
+        while ($rootAdmin->isChild()) {
+            $rootAdmin->setCurrentChild(true);
+            $rootAdmin = $rootAdmin->getParent();
+        }
+
+        $rootAdmin->setRequest($request);
+
+        if ($request->get('uniqid')) {
+            $this->admin->setUniqid($request->get('uniqid'));
+        }
+    }
+
+    /**
      * @param array<string, mixed> $parameters
      *
      * @return array<string, mixed>
@@ -916,7 +975,6 @@ class CRUDController extends AbstractController
 
         $parameters['admin'] = $parameters['admin'] ?? $this->admin;
         $parameters['base_template'] = $parameters['base_template'] ?? $this->getBaseTemplate();
-        $parameters['admin_pool'] = $this->get('sonata.admin.pool');
 
         return $parameters;
     }
@@ -946,54 +1004,21 @@ class CRUDController extends AbstractController
     }
 
     /**
-     * Contextualize the admin class depends on the current request.
-     *
-     * @throws \RuntimeException
+     * @deprecated since sonata-project/admin-bundle 3.86, will be removed in 4.0. Use configureAdmin method instead.
      */
     protected function configure(): void
     {
+        if ('sonata_deprecation_mute' !== (\func_get_args()[0] ?? null)) {
+            @trigger_error(sprintf(
+                'The "%s()" method is deprecated since sonata-project/admin-bundle version 3.86 and will be'
+                .' removed in 4.0 version.',
+                __METHOD__
+            ), \E_USER_DEPRECATED);
+        }
+
         $request = $this->getRequest();
 
-        $adminCode = $request->get('_sonata_admin');
-
-        if (!$adminCode) {
-            throw new \RuntimeException(sprintf(
-                'There is no `_sonata_admin` defined for the controller `%s` and the current route `%s`',
-                static::class,
-                $request->get('_route')
-            ));
-        }
-
-        try {
-            $this->admin = $this->get('sonata.admin.pool')->getAdminByAdminCode($adminCode);
-        } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException(sprintf(
-                'Unable to find the admin class related to the current controller (%s)',
-                static::class
-            ));
-        }
-
-        if (!$this->admin->hasTemplateRegistry()) {
-            throw new \RuntimeException(sprintf(
-                'Unable to find the template registry related to the current admin (%s)',
-                $this->admin->getCode()
-            ));
-        }
-
-        $this->templateRegistry = $this->admin->getTemplateRegistry();
-
-        $rootAdmin = $this->admin;
-
-        while ($rootAdmin->isChild()) {
-            $rootAdmin->setCurrentChild(true);
-            $rootAdmin = $rootAdmin->getParent();
-        }
-
-        $rootAdmin->setRequest($request);
-
-        if ($request->get('uniqid')) {
-            $this->admin->setUniqid($request->get('uniqid'));
-        }
+        $this->configureAdmin($request);
     }
 
     /**
@@ -1044,6 +1069,8 @@ class CRUDController extends AbstractController
 
     /**
      * Redirect the user depend on this choice.
+     *
+     * @phpstan-param T $object
      */
     protected function redirectTo(object $object): RedirectResponse
     {
@@ -1220,7 +1247,7 @@ class CRUDController extends AbstractController
      */
     protected function escapeHtml(string $s): string
     {
-        return htmlspecialchars((string) $s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars((string) $s, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
@@ -1238,6 +1265,8 @@ class CRUDController extends AbstractController
     /**
      * This method can be overloaded in your custom CRUD controller.
      * It's called from createAction.
+     *
+     * @phpstan-param T $object
      */
     protected function preCreate(Request $request, object $object): ?Response
     {
@@ -1247,6 +1276,8 @@ class CRUDController extends AbstractController
     /**
      * This method can be overloaded in your custom CRUD controller.
      * It's called from editAction.
+     *
+     * @phpstan-param T $object
      */
     protected function preEdit(Request $request, object $object): ?Response
     {
@@ -1256,6 +1287,8 @@ class CRUDController extends AbstractController
     /**
      * This method can be overloaded in your custom CRUD controller.
      * It's called from deleteAction.
+     *
+     * @phpstan-param T $object
      */
     protected function preDelete(Request $request, object $object): ?Response
     {
@@ -1265,6 +1298,8 @@ class CRUDController extends AbstractController
     /**
      * This method can be overloaded in your custom CRUD controller.
      * It's called from showAction.
+     *
+     * @phpstan-param T $object
      */
     protected function preShow(Request $request, object $object): ?Response
     {
@@ -1290,11 +1325,47 @@ class CRUDController extends AbstractController
         return $this->get('translator')->trans($id, $parameters, $domain, $locale);
     }
 
+    protected function handleXmlHttpRequestErrorResponse(Request $request, FormInterface $form): ?JsonResponse
+    {
+        if (empty(array_intersect(['application/json', '*/*'], $request->getAcceptableContentTypes()))) {
+            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
+        $errors = [];
+        foreach ($form->getErrors(true) as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        return $this->renderJson([
+            'result' => 'error',
+            'errors' => $errors,
+        ], Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @phpstan-param T $object
+     */
+    protected function handleXmlHttpRequestSuccessResponse(Request $request, object $object): JsonResponse
+    {
+        if (empty(array_intersect(['application/json', '*/*'], $request->getAcceptableContentTypes()))) {
+            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
+        return $this->renderJson([
+            'result' => 'ok',
+            'objectId' => $this->admin->getNormalizedIdentifier($object),
+            'objectName' => $this->escapeHtml($this->admin->toString($object)),
+        ], Response::HTTP_OK);
+    }
+
     private function getSelectedTab(Request $request): array
     {
         return array_filter(['_tab' => $request->request->get('_tab')]);
     }
 
+    /**
+     * @phpstan-param T $object
+     */
     private function checkParentChildAssociation(Request $request, object $object): void
     {
         if (!$this->admin->isChild()) {
@@ -1324,35 +1395,5 @@ class CRUDController extends AbstractController
         $twig = $this->get('twig');
 
         $twig->getRuntime(FormRenderer::class)->setTheme($formView, $theme);
-    }
-
-    private function handleXmlHttpRequestErrorResponse(Request $request, FormInterface $form): JsonResponse
-    {
-        if (empty(array_intersect(['application/json', '*/*'], $request->getAcceptableContentTypes()))) {
-            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
-        }
-
-        $errors = [];
-        foreach ($form->getErrors(true) as $error) {
-            $errors[] = $error->getMessage();
-        }
-
-        return $this->renderJson([
-            'result' => 'error',
-            'errors' => $errors,
-        ], Response::HTTP_BAD_REQUEST);
-    }
-
-    private function handleXmlHttpRequestSuccessResponse(Request $request, object $object): JsonResponse
-    {
-        if (empty(array_intersect(['application/json', '*/*'], $request->getAcceptableContentTypes()))) {
-            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
-        }
-
-        return $this->renderJson([
-            'result' => 'ok',
-            'objectId' => $this->admin->getNormalizedIdentifier($object),
-            'objectName' => $this->escapeHtml($this->admin->toString($object)),
-        ], Response::HTTP_OK);
     }
 }

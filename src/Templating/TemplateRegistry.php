@@ -30,9 +30,9 @@ final class TemplateRegistry extends AbstractTemplateRegistry implements Mutable
         $this->templates = $templates;
 
         @trigger_error(sprintf(
-            'Method "%s()" is deprecated since sonata-admin/admin-bundle 3.39 and will be removed in 4.0.',
+            'Method "%s()" is deprecated since sonata-project/admin-bundle 3.39 and will be removed in 4.0.',
             __METHOD__
-        ), E_USER_DEPRECATED);
+        ), \E_USER_DEPRECATED);
     }
 
     /**
@@ -45,8 +45,8 @@ final class TemplateRegistry extends AbstractTemplateRegistry implements Mutable
         $this->templates[$name] = $template;
 
         @trigger_error(sprintf(
-            'Method "%s()" is deprecated since sonata-admin/admin-bundle 3.39 and will be removed in 4.0.',
+            'Method "%s()" is deprecated since sonata-project/admin-bundle 3.39 and will be removed in 4.0.',
             __METHOD__
-        ), E_USER_DEPRECATED);
+        ), \E_USER_DEPRECATED);
     }
 }

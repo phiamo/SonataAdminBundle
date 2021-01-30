@@ -13,12 +13,34 @@ declare(strict_types=1);
 
 namespace Sonata\AdminBundle\Admin;
 
+use Sonata\AdminBundle\Exception\NoValueException;
+
 /**
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
 interface FieldDescriptionInterface
 {
-    public function setFieldName(?string $fieldName): void;
+    public const TYPE_ARRAY = 'array';
+    public const TYPE_BOOLEAN = 'boolean';
+    public const TYPE_DATE = 'date';
+    public const TYPE_TIME = 'time';
+    public const TYPE_DATETIME = 'datetime';
+    public const TYPE_TEXTAREA = 'textarea';
+    public const TYPE_EMAIL = 'email';
+    public const TYPE_TRANS = 'trans';
+    public const TYPE_STRING = 'string';
+    public const TYPE_INTEGER = 'integer';
+    public const TYPE_FLOAT = 'float';
+    public const TYPE_IDENTIFIER = 'identifier';
+    public const TYPE_CURRENCY = 'currency';
+    public const TYPE_PERCENT = 'percent';
+    public const TYPE_CHOICE = 'choice';
+    public const TYPE_URL = 'url';
+    public const TYPE_HTML = 'html';
+    public const TYPE_MANY_TO_MANY = 'many_to_many';
+    public const TYPE_MANY_TO_ONE = 'many_to_one';
+    public const TYPE_ONE_TO_MANY = 'one_to_many';
+    public const TYPE_ONE_TO_ONE = 'one_to_one';
 
     /**
      * Returns the field name.
@@ -101,13 +123,6 @@ interface FieldDescriptionInterface
     public function hasParent(): bool;
 
     /**
-     * Define the association mapping definition.
-     *
-     * @param array<string, mixed> $associationMapping
-     */
-    public function setAssociationMapping(array $associationMapping): void;
-
-    /**
      * Returns the association mapping definition.
      *
      * @return array<string, mixed>
@@ -116,15 +131,10 @@ interface FieldDescriptionInterface
 
     /**
      * Returns the related Target object model.
+     *
+     * @phpstan-return class-string|null
      */
     public function getTargetModel(): ?string;
-
-    /**
-     * Sets the field mapping information.
-     *
-     * @param array<string, mixed> $fieldMapping
-     */
-    public function setFieldMapping(array $fieldMapping): void;
 
     /**
      * Returns the field mapping definition.
@@ -132,13 +142,6 @@ interface FieldDescriptionInterface
      * @return array<string, mixed>
      */
     public function getFieldMapping(): array;
-
-    /**
-     * set the parent association mappings information.
-     *
-     *  @param array<array<string, mixed>> $parentAssociationMappings
-     */
-    public function setParentAssociationMappings(array $parentAssociationMappings): void;
 
     /**
      * Returns the parent association mapping definitions.
@@ -169,6 +172,8 @@ interface FieldDescriptionInterface
     /**
      * Returns the value linked to the description.
      *
+     * @throws NoValueException if the value cannot be determined
+     *
      * @return mixed
      */
     public function getValue(object $object);
@@ -197,13 +202,6 @@ interface FieldDescriptionInterface
      * @param array<string, mixed> $options
      */
     public function mergeOptions(array $options = []): void;
-
-    /**
-     * set the original mapping type (only used if the field is linked to an entity).
-     *
-     * @param int|string $mappingType
-     */
-    public function setMappingType($mappingType): void;
 
     /**
      * Returns the mapping type.
@@ -243,9 +241,4 @@ interface FieldDescriptionInterface
      * @return array<string, mixed>
      */
     public function getSortParentAssociationMapping(): array;
-
-    /**
-     * @return mixed
-     */
-    public function getFieldValue(?object $object, ?string $fieldName);
 }
